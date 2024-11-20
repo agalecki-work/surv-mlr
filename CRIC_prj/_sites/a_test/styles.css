@@ -1,0 +1,55 @@
+.code-wrapper {
+  margin-bottom: 1em;
+}
+
+.fold-button {
+  cursor: pointer;
+  color: #007BFF;
+  text-decoration: underline;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.9em;
+  margin-bottom: 0.5em;
+}
+
+/* Style for code blocks */
+pre, .sourceCode {
+  white-space: pre; /* Prevent wrapping */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  display: block;
+  padding: 10px;
+  background-color: #f8f8f8; /* Light grey background */
+  border: 1px solid #dddddd; /* Light border */
+  border-radius: 5px;
+  line-height: 1.5em; /* Add sufficient line height */
+  margin: 10px 0; /* Add margin to prevent overlapping lines */
+}
+
+/* Ensures pre tags inside pre elements don't wrap and apply line height */
+pre code {
+  white-space: pre;
+  line-height: 1.5em; /* Add sufficient line height */
+}
+
+/* Style for R output */
+.r-output pre, .r-output {
+  white-space: pre; /* Prevent wrapping */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  display: block;
+  padding: 10px;
+  background-color: #f8f8f8; /* Light grey background */
+  border: 1px solid #dddddd; /* Light border */
+  border-radius: 5px;
+  line-height: 1.5em; /* Add sufficient line height */
+  margin: 10px 0; /* Add margin to prevent overlapping lines */
+}
+
+/* Apply line height to code inside R output */
+.r-output code {
+  white-space: pre; /* Prevent wrapping */
+  display: block;
+  overflow-x: auto;
+  line-height: 1.5em; /* Add sufficient line height */
+  margin: 10px 0; /* Add margin to prevent overlapping lines */
+}

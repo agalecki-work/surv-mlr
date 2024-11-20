@@ -1,0 +1,31 @@
+name: "CRIC project"
+output_dir: "a_{analysis_name}"
+navbar:
+  title: "CRIC"
+  left:
+    - text: "H:{analysis_name}"
+      href: index.html
+    - text: "Info"
+      href: 00Info.html
+!replace!
+    - text: "Template"
+      href: 99template.html
+output:
+  html_document:
+    theme: flatly
+    highlight: kate
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    number_sections: true
+    code_folding: hide
+    code_download: true
+    fig_width: 8
+    fig_height: 6
+    fig_caption: true
+    df_print: paged
+    self_contained: false
+    css: styles.css
+    

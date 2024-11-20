@@ -1,0 +1,650 @@
+CoxBoost = function (time, status, x, unpen.index = NULL, standardize = TRUE, 
+    subset = 1:length(time), weights = NULL, stratum = NULL, 
+    stepno = 100, penalty = 9 * sum(status[subset] == 1), criterion = c("pscore", 
+        "score", "hpscore", "hscore"), cmprsk = c("sh", "csh", 
+        "ccsh"), coupled.strata = TRUE, stepsize.factor = 1, 
+    sf.scheme = c("sigmoid", "linear"), pendistmat = NULL, connected.index = NULL, 
+    x.is.01 = FALSE, return.score = TRUE, trace = FALSE) 
+{
+    sf.scheme <- match.arg(sf.scheme)
+    criterion <- match.arg(criterion)
+    cmprsk <- match.arg(cmprsk)
+    ori.stepno <- stepno
+    if (is.list(stepno)) 
+        stepno <- max(unlist(stepno))
+    if (any(is.na(x))) {
+        stop("'x' may not contain missing values")
+    }
+    if (length(unpen.index) >= ncol(x)) {
+        stop("All covariates are indicated as mandatory. At least one non-mandatory covariate is needed.")
+    }
+    if (!is.null(weights) && is.matrix(weights)) {
+        if (is.null(attr(weights, "times"))) {
+            unique.times <- sort(unique(time[status != 0]))
+            if (ncol(weights) != length(unique.times)) {
+                stop("if 'attr(,\"times\")' is not specified for matrix 'weights', the number of columns has to be the number of unique event times.")
+            }
+            attr(weights, "times") <- unique.times
+        }
+        weight.times <- attr(weights, "times")
+    }
+    object <- list()
+    time <- time[subset]
+    status <- status[subset]
+    object$time <- time
+    object$status <- status
+    object$event.times <- sort(unique(object$time[object$status != 
+        0]))
+    time.order <- order(time, decreasing = TRUE)
+    subset.time.order <- (1:nrow(x))[subset][time.order]
+    status <- status[time.order]
+    time <- time[time.order]
+    if (!is.null(weights)) {
+        if (is.matrix(weights)) {
+            weights <- weights[subset, ]
+            attr(weights, "times") <- weight.times
+        }
+        else {
+            weights <- weights[subset]
+        }
+    }
+    else {
+        weights <- rep(1, length(time))
+    }
+    object$weights <- weights
+    if (is.matrix(weights)) 
+        attr(object$weights, "times") <- weight.times
+    if (is.matrix(weights)) {
+        weights <- weights[time.order, ]
+        attr(weights, "times") <- weight.times
+    }
+    else {
+        weights <- weights[time.order]
+    }
+    if (is.null(stratum)) {
+        object$strata <- "1"
+        object$stratum <- stratum <- rep(1, length(time))
+    }
+    else {
+        object$stratum <- stratum <- stratum[subset]
+        object$strata <- names(table(stratum))
+    }
+    stratum <- stratum[time.order]
+    object$stepno <- stepno
+    object$unpen.index <- unpen.index
+    pen.index <- 1:ncol(x)
+    if (!is.null(unpen.index)) 
+        pen.index <- pen.index[-unpen.index]
+    if (is.null(colnames(x))) {
+        object$xnames <- paste("V", 1:ncol(x), sep = "")
+    }
+    else {
+        object$xnames <- colnames(x)
+    }
+    if (!is.null(connected.index) && any(connected.index %in% 
+        unpen.index)) {
+        stop("sets of unpenalized and connected covariates may not overlap")
+    }
+    if (!is.null(pendistmat) && is.null(connected.index)) {
+        if (ncol(pendistmat) == ncol(x) - length(unpen.index)) {
+            if (!is.null(unpen.index)) {
+                connected.index <- (1:ncol(x))[-unpen.index]
+            }
+            else {
+                connected.index <- 1:ncol(x)
+            }
+        }
+        else {
+            stop("'connected.index' is missing and cannot be guessed")
+        }
+    }
+    if (!is.null(unpen.index)) {
+        if (!is.null(connected.index)) 
+            connected.index <- match(connected.index, (1:ncol(x))[-unpen.index])
+        unpen.x <- x[subset.time.order, unpen.index, drop = FALSE]
+    }
+    n <- length(status)
+    p <- length(pen.index)
+    penpos <- match(1:p, connected.index)
+    object$n <- n
+    object$p <- p
+    object$meanx <- rep(0, length(object$xnames))
+    object$sdx <- rep(1, length(object$xnames))
+    if (standardize) {
+        pen.sdx <- apply(x[subset, pen.index, drop = FALSE], 
+            2, sd)
+        pen.sdx <- ifelse(pen.sdx == 0, 1, pen.sdx)
+        pen.meanx <- apply(x[subset, pen.index, drop = FALSE], 
+            2, mean)
+        x[subset, pen.index] <- scale(x[subset, pen.index], center = pen.meanx, 
+            scale = pen.sdx)
+        object$meanx[pen.index] <- pen.meanx
+        object$sdx[pen.index] <- pen.sdx
+        object$standardize <- TRUE
+    }
+    else {
+        object$standardize <- FALSE
+    }
+    if (!is.null(unpen.index)) {
+        unpen.x.ori <- unpen.x
+        unpen.x <- list()
+        for (i in seq(along = object$strata)) {
+            unpen.x[[i]] <- unpen.x.ori[stratum == object$strata[i], 
+                , drop = FALSE]
+        }
+        unpen.x.ori <- NULL
+    }
+    x.double.vec <- list()
+    for (i in seq(along = object$strata)) {
+        x.double.vec[[i]] <- as.double(x[subset.time.order, pen.index, 
+            drop = FALSE][stratum == object$strata[i], , drop = FALSE])
+    }
+    object$causes <- names(table(status[status != 0]))
+    if (length(object$causes) > 1 && cmprsk == "sh") {
+        object$causes <- object$causes[1]
+        if (is.matrix(weights)) {
+            warning("time-dependent weights might conflict with IPC weights")
+        }
+    }
+    model <- list()
+    for (i in seq(along = object$causes)) {
+        for (j in seq(along = object$strata)) {
+            model.index <- (i - 1) * length(object$strata) + 
+                j
+            model[[model.index]] <- list(code = object$causes[i], 
+                stratum = object$strata[j])
+            actual.smask <- stratum == model[[model.index]]$stratum
+            actual.n <- sum(actual.smask)
+            model[[model.index]]$n <- actual.n
+            if (is.list(penalty)) {
+                if (is.null(names(penalty))) {
+                  actual.penalty <- penalty[[i]]
+                }
+                else {
+                  actual.penalty <- penalty[[model[[model.index]]$code]]
+                }
+            }
+            else {
+                actual.penalty <- penalty
+            }
+            if (is.list(ori.stepno)) {
+                if (is.null(names(ori.stepno))) {
+                  model[[model.index]]$stepno <- ori.stepno[[i]]
+                }
+                else {
+                  model[[model.index]]$stepno <- ori.stepno[[model[[model.index]]$code]]
+                }
+            }
+            else {
+                model[[model.index]]$stepno <- ori.stepno
+            }
+            if (length(actual.penalty) < length(pen.index)) 
+                model[[model.index]]$penalty <- rep(actual.penalty[1], 
+                  length(pen.index))
+            if (any(stepsize.factor != 1)) {
+                model[[model.index]]$penaltymat <- matrix(NA, 
+                  stepno, length(model[[model.index]]$penalty))
+            }
+            model[[model.index]]$reverse.time.order <- match(seq(along = object$time)[object$stratum == 
+                object$strata[j]], time.order[actual.smask])
+            model[[model.index]]$uncens <- which(status[actual.smask] == 
+                model[[model.index]]$code)
+            model[[model.index]]$n.uncens <- length(model[[model.index]]$uncens)
+            model[[model.index]]$event.times <- sort(unique(time[actual.smask][model[[model.index]]$uncens]))
+            if (is.matrix(weights)) {
+                model[[model.index]]$weight.at.times <- weight.at.times(weights[actual.smask, 
+                  , drop = FALSE], weight.times, time[actual.smask][model[[model.index]]$uncens])
+                model[[model.index]]$weight.at.event <- diag(model[[model.index]]$weight.at.times[model[[model.index]]$uncens, 
+                  , drop = FALSE])
+            }
+            else {
+                if (!is.null(weights)) {
+                  model[[model.index]]$weight.at.event <- weights[actual.smask][model[[model.index]]$uncens]
+                }
+                else {
+                  model[[model.index]]$weight.at.event <- rep(1, 
+                    length(model[[model.index]]$uncens))
+                }
+            }
+            model[[model.index]]$coefficients <- Matrix::Matrix(0, 
+                stepno + 1, p)
+            if (!is.null(unpen.index)) {
+                model[[model.index]]$unpen.coefficients <- matrix(NA, 
+                  stepno + 1, ncol(unpen.x[[1]]))
+            }
+            else {
+                model[[model.index]]$unpen.coefficients <- NULL
+            }
+            model[[model.index]]$linear.predictor <- matrix(NA, 
+                stepno + 1, actual.n)
+            model[[model.index]]$Lambda <- matrix(NA, stepno + 
+                1, length(model[[model.index]]$event.times))
+            if (return.score) 
+                model[[model.index]]$scoremat <- matrix(NA, max(1, 
+                  stepno), object$p)
+            if (cmprsk == "sh") {
+                if (is.matrix(weights)) {
+                  model[[model.index]]$weightmat <- efron.weightmat(time[actual.smask], 
+                    status[actual.smask], model[[model.index]]$code, 
+                    model[[model.index]]$weight.at.times)
+                }
+                else {
+                  model[[model.index]]$weightmat <- efron.weightmat(time[actual.smask], 
+                    status[actual.smask], model[[model.index]]$code, 
+                    weights[actual.smask])
+                }
+            }
+            else {
+                if (is.matrix(weights)) {
+                  model[[model.index]]$weightmat <- efron.weightmat(time[actual.smask], 
+                    ifelse(status == model[[model.index]]$code, 
+                      status, 0)[actual.smask], model[[model.index]]$code, 
+                    model[[model.index]]$weight.at.times)
+                }
+                else {
+                  model[[model.index]]$weightmat <- efron.weightmat(time[actual.smask], 
+                    ifelse(status == model[[model.index]]$code, 
+                      status, 0)[actual.smask], model[[model.index]]$code, 
+                    weights[actual.smask])
+                }
+            }
+            model[[model.index]]$weightmat <- model[[model.index]]$weightmat
+            model[[model.index]]$actual.beta <- rep(0, p)
+            if (!is.null(unpen.index)) 
+                model[[model.index]]$actual.unpen.beta <- rep(0, 
+                  ncol(unpen.x[[1]]))
+            model[[model.index]]$actual.linear.predictor <- rep(0, 
+                actual.n)
+            model[[model.index]]$actual.risk.score <- rep(1, 
+                actual.n)
+            model[[model.index]]$ml.fraction <- rep(0, p)
+            model[[model.index]]$weight.double.vec <- as.double(model[[model.index]]$weightmat)
+            model[[model.index]]$max.nz.vec <- as.integer(apply(model[[model.index]]$weightmat, 
+                2, function(arg) max(which(arg != 0))))
+            model[[model.index]]$max.1.vec <- as.integer(c(0, 
+                rev(cummin(rev(apply(model[[model.index]]$weightmat, 
+                  2, function(arg) ifelse(!any(arg != 1), length(arg), 
+                    min(which(arg != 1) - 1))))))))
+            model[[model.index]]$uncens.C <- as.integer(model[[model.index]]$uncens - 
+                1)
+            model[[model.index]]$warnstep <- NULL
+            model[[model.index]]$unpen.warn <- NULL
+            model[[model.index]]$first.score <- NULL
+            model[[model.index]]$presel.index <- c()
+        }
+    }
+    for (actual.step in 0:stepno) {
+        model.score <- NULL
+        model.beta.delta <- NULL
+        model.U <- NULL
+        model.I <- NULL
+        for (cause.index in seq(along = object$causes)) {
+            for (stratum.index in seq(along = object$strata)) {
+                model.index <- (cause.index - 1) * length(object$strata) + 
+                  stratum.index
+                actual.smask <- stratum == object$strata[stratum.index]
+                if (actual.step > 0 && any(stepsize.factor != 
+                  1)) {
+                  model[[model.index]]$penaltymat[stepno, ] <- model[[model.index]]$penalty
+                }
+                weightmat.times.risk <- model[[model.index]]$weightmat * 
+                  model[[model.index]]$actual.risk.score
+                weightmat.times.risk.sum <- colSums(weightmat.times.risk)
+                if (!is.null(unpen.index)) {
+                  if (actual.step == 1 || !is.null(model[[model.index]]$unpen.warn)) {
+                    model[[model.index]]$unpen.coefficients[actual.step + 
+                      1, ] <- model[[model.index]]$actual.unpen.beta
+                  }
+                  else {
+                    x.bar <- (t(weightmat.times.risk) %*% unpen.x[[stratum.index]])/weightmat.times.risk.sum
+                    U <- colSums((unpen.x[[stratum.index]][model[[model.index]]$uncens, 
+                      ] - x.bar) * model[[model.index]]$weight.at.event)
+                    I <- matrix(0, ncol(unpen.x[[stratum.index]]), 
+                      ncol(unpen.x[[stratum.index]]))
+                    for (i in 1:model[[model.index]]$n.uncens) {
+                      x.minus.bar <- t(t(unpen.x[[stratum.index]]) - 
+                        x.bar[i, ])
+                      I <- I + (t(x.minus.bar * (weightmat.times.risk[, 
+                        i])) %*% x.minus.bar)/weightmat.times.risk.sum[i] * 
+                        model[[model.index]]$weight.at.event[i]
+                    }
+                    try.res <- try(unpen.beta.delta <- drop(solve(I) %*% 
+                      U), silent = TRUE)
+                    if (class(try.res) == "try-error") {
+                      model[[model.index]]$unpen.warn <- actual.step
+                      if (actual.step == 0) {
+                        model[[model.index]]$unpen.coefficients[actual.step + 
+                          1, ] <- 0
+                        model[[model.index]]$actual.unpen.beta <- model[[model.index]]$unpen.coefficients[actual.step + 
+                          1, ]
+                      }
+                    }
+                    else {
+                      model[[model.index]]$actual.unpen.beta <- model[[model.index]]$actual.unpen.beta + 
+                        unpen.beta.delta
+                      model[[model.index]]$unpen.coefficients[actual.step + 
+                        1, ] <- model[[model.index]]$actual.unpen.beta
+                      model[[model.index]]$actual.linear.predictor <- model[[model.index]]$actual.linear.predictor + 
+                        drop(unpen.x[[stratum.index]] %*% unpen.beta.delta)
+                      model[[model.index]]$actual.risk.score <- exp(drop(model[[model.index]]$actual.linear.predictor))
+                      weightmat.times.risk <- model[[model.index]]$weightmat * 
+                        model[[model.index]]$actual.risk.score
+                      weightmat.times.risk.sum <- colSums(weightmat.times.risk)
+                    }
+                  }
+                }
+                if (actual.step == 0) {
+                  model[[model.index]]$coefficients[actual.step + 
+                    1, ] <- model[[model.index]]$actual.beta
+                  model[[model.index]]$linear.predictor[actual.step + 
+                    1, ] <- model[[model.index]]$actual.linear.predictor[model[[model.index]]$reverse.time.order]
+                  if (is.matrix(weights)) {
+                    model[[model.index]]$Lambda[actual.step + 
+                      1, ] <- calc.Lambda(model[[model.index]]$event.times, 
+                      time[actual.smask], model[[model.index]]$uncens, 
+                      weightmat.times.risk.sum, model[[model.index]]$weight.at.times)
+                  }
+                  else {
+                    model[[model.index]]$Lambda[actual.step + 
+                      1, ] <- calc.Lambda(model[[model.index]]$event.times, 
+                      time[actual.smask], model[[model.index]]$uncens, 
+                      weightmat.times.risk.sum, weights[actual.smask])
+                  }
+                  next
+                }
+                res <- find.best(x.double.vec[[stratum.index]], 
+                  model[[model.index]]$n, p, model[[model.index]]$uncens.C, 
+                  model[[model.index]]$uncens, model[[model.index]]$actual.beta, 
+                  model[[model.index]]$actual.risk.score, model[[model.index]]$actual.linear.predictor, 
+                  model[[model.index]]$weight.at.event, model[[model.index]]$max.nz.vec, 
+                  model[[model.index]]$max.1.vec, weightmat.times.risk, 
+                  weightmat.times.risk.sum, is.matrix(weights), 
+                  model[[model.index]]$penalty, criterion, actual.step, 
+                  x.is.01, model[[model.index]]$presel.index, 
+                  model[[model.index]]$first.score, heuristic = !(length(object$strata) > 
+                    1 && !coupled.strata && (criterion == "hscore" || 
+                    criterion == "hpscore")))
+                if (is.null(model[[model.index]]$warnstep) && 
+                  res$warncount > 0) 
+                  model[[model.index]]$warnstep <- actual.step
+                if (return.score) 
+                  model[[model.index]]$scoremat[actual.step, 
+                    ] <- res$score.vec
+                if ((criterion == "hscore" || criterion == "hpscore") && 
+                  actual.step == 1) {
+                  model[[model.index]]$first.score <- res$score.vec
+                }
+                model.score <- rbind(model.score, res$score.vec)
+                model.beta.delta <- rbind(model.beta.delta, res$beta.delta.vec)
+                model.U <- rbind(model.U, res$U.vec)
+                model.I <- rbind(model.I, res$I.vec)
+            }
+        }
+        if (actual.step == 0) 
+            next
+        if (length(object$strata) > 1 || cmprsk == "ccsh") {
+            if (cmprsk == "ccsh") {
+                cause.min.index <- rep(which.max(apply(model.score, 
+                  2, function(arg) -2 * sum(log(1 - pchisq(arg, 
+                    df = 1))))), length(object$causes))
+            }
+            else {
+                cause.min.index <- integer(length(object$causes))
+                for (i in seq(along = object$causes)) {
+                  if (coupled.strata) {
+                    cause.min.index[i] <- which.max(apply(model.score[((i - 
+                      1) * length(object$strata) + 1):(i * length(object$strata)), 
+                      , drop = FALSE], 2, function(arg) -2 * 
+                      sum(log(1 - pchisq(arg, df = 1)))))
+                  }
+                  else {
+                    actual.first <- ((i - 1) * length(object$strata) + 
+                      1)
+                    actual.last <- (i * length(object$strata))
+                    stratum.U <- colSums(model.U[actual.first:actual.last, 
+                      , drop = FALSE])
+                    stratum.I <- colSums(model.I[actual.first:actual.last, 
+                      , drop = FALSE])
+                    if (criterion == "hpscore" || criterion == 
+                      "pscore") {
+                      stratum.score <- stratum.U * stratum.U/(stratum.I + 
+                        model[[actual.first]]$penalty)
+                    }
+                    else {
+                      stratum.score <- stratum.U * stratum.U/(stratum.I + 
+                        1/0.1 - 1)
+                    }
+                    if (return.score) {
+                      for (j in actual.first:actual.last) model[[j]]$scoremat[actual.step, 
+                        ] <- stratum.score
+                    }
+                    if (criterion == "hscore" || criterion == 
+                      "hpscore") {
+                      if (actual.step == 1) {
+                        for (j in actual.first:actual.last) {
+                          model[[j]]$first.score <- stratum.score
+                        }
+                      }
+                      if (actual.step > 1) {
+                        min.presel.score <- min(stratum.score[model[[actual.first]]$presel.index])
+                        if (length(model[[actual.first]]$presel.index) < 
+                          length(model[[actual.first]]$first.score) && 
+                          min.presel.score < max(model[[actual.first]]$first.score[-model[[actual.first]]$presel.index])) {
+                          new.candidates <- sort(union(which(model[[actual.first]]$first.score > 
+                            min.presel.score), model[[actual.first]]$presel.index))
+                          for (stratum.index in 1:length(object$strata)) {
+                            model.index <- ((i - 1) * length(object$strata) + 
+                              stratum.index)
+                            weightmat.times.risk <- model[[model.index]]$weightmat * 
+                              model[[model.index]]$actual.risk.score
+                            weightmat.times.risk.sum <- colSums(weightmat.times.risk)
+                            res <- find.best(x.double.vec[[stratum.index]], 
+                              model[[model.index]]$n, p, model[[model.index]]$uncens.C, 
+                              model[[model.index]]$uncens, model[[model.index]]$actual.beta, 
+                              model[[model.index]]$actual.risk.score, 
+                              model[[model.index]]$actual.linear.predictor, 
+                              model[[model.index]]$weight.at.event, 
+                              model[[model.index]]$max.nz.vec, 
+                              model[[model.index]]$max.1.vec, 
+                              weightmat.times.risk, weightmat.times.risk.sum, 
+                              is.matrix(weights), model[[model.index]]$penalty, 
+                              criterion, actual.step, x.is.01, 
+                              new.candidates, model[[model.index]]$first.score, 
+                              heuristic = FALSE)
+                            if (is.null(model[[model.index]]$warnstep) && 
+                              res$warncount > 0) {
+                              model[[model.index]]$warnstep <- actual.step
+                            }
+                            model.score[model.index, ] <- res$score.vec
+                            model.beta.delta[model.index, ] <- res$beta.delta.vec
+                            model.U[model.index, ] <- res$U.vec
+                            model.I[model.index, ] <- res$I.vec
+                          }
+                          stratum.U <- colSums(model.U[actual.first:actual.last, 
+                            , drop = FALSE])
+                          stratum.I <- colSums(model.I[actual.first:actual.last, 
+                            , drop = FALSE])
+                          if (criterion == "hpscore" || criterion == 
+                            "pscore") {
+                            stratum.score <- stratum.U * stratum.U/(stratum.I + 
+                              model[[actual.first]]$penalty)
+                          }
+                          else {
+                            stratum.score <- stratum.U * stratum.U/(stratum.I + 
+                              1/0.1 - 1)
+                          }
+                          if (return.score) {
+                            for (j in actual.first:actual.last) model[[j]]$scoremat[actual.step, 
+                              ] <- stratum.score
+                          }
+                        }
+                      }
+                    }
+                    candidate.indices <- (1:length(stratum.I))[stratum.I != 
+                      0]
+                    candidate.penalty <- model[[actual.first]]$penalty[stratum.I != 
+                      0]
+                    stratum.U <- stratum.U[stratum.I != 0]
+                    stratum.I <- stratum.I[stratum.I != 0]
+                    if (criterion == "pscore" || criterion == 
+                      "hpscore") {
+                      candidate.min <- which.max(stratum.U * 
+                        stratum.U/(stratum.I + candidate.penalty))
+                      cause.min.index[i] <- candidate.indices[candidate.min]
+                    }
+                    else {
+                      candidate.min <- which.max(stratum.U * 
+                        stratum.U/(stratum.I + 1/0.1 - 1))
+                      cause.min.index[i] <- candidate.indices[candidate.min]
+                    }
+                    model.beta.delta[actual.first:actual.last, 
+                      cause.min.index[i]] <- stratum.U[candidate.min]/(stratum.I[candidate.min] + 
+                      model[[actual.first]]$penalty[cause.min.index[i]])
+                  }
+                }
+            }
+        }
+        else {
+            cause.min.index <- apply(model.score, 1, which.max)
+        }
+        for (cause.index in seq(along = object$causes)) {
+            min.index <- cause.min.index[cause.index]
+            if (trace) 
+                cat(object$xnames[pen.index][min.index], " ", 
+                  sep = "")
+            for (stratum.index in seq(along = object$strata)) {
+                model.index <- (cause.index - 1) * length(object$strata) + 
+                  stratum.index
+                actual.smask <- stratum == object$strata[stratum.index]
+                min.beta.delta <- model.beta.delta[model.index, 
+                  min.index]
+                if (criterion == "hscore" || criterion == "hpscore") {
+                  model[[model.index]]$presel.index <- sort(union(model[[model.index]]$presel.index, 
+                    min.index))
+                }
+                if (!is.null(pendistmat)) {
+                  model[[model.index]]$ml.fraction[min.index] <- update.ml.fraction(model[[model.index]]$ml.fraction[min.index], 
+                    model[[model.index]]$weightmat, model[[model.index]]$actual.risk.score, 
+                    x, subset.time.order[stratum == object$strata[stratum.index]], 
+                    pen.index, min.index, model[[model.index]]$n.uncens, 
+                    model[[model.index]]$penalty)
+                }
+                model[[model.index]]$actual.beta[min.index] <- model[[model.index]]$actual.beta[min.index] + 
+                  min.beta.delta
+                if (length(object$strata) > 1) {
+                  model[[model.index]]$actual.linear.predictor <- model[[model.index]]$actual.linear.predictor + 
+                    x[subset.time.order[stratum == object$strata[stratum.index]], 
+                      pen.index[min.index], drop = FALSE] * min.beta.delta
+                }
+                else {
+                  model[[model.index]]$actual.linear.predictor <- model[[model.index]]$actual.linear.predictor + 
+                    x[subset.time.order, pen.index[min.index]] * 
+                      min.beta.delta
+                }
+                model[[model.index]]$actual.risk.score <- exp(drop(model[[model.index]]$actual.linear.predictor))
+                weightmat.times.risk <- model[[model.index]]$weightmat * 
+                  model[[model.index]]$actual.risk.score
+                weightmat.times.risk.sum <- colSums(weightmat.times.risk)
+                model[[model.index]]$coefficients[actual.step + 
+                  1, ] <- model[[model.index]]$actual.beta
+                model[[model.index]]$linear.predictor[actual.step + 
+                  1, ] <- model[[model.index]]$actual.linear.predictor[model[[model.index]]$reverse.time.order]
+                if (is.matrix(weights)) {
+                  model[[model.index]]$Lambda[actual.step + 1, 
+                    ] <- calc.Lambda(model[[model.index]]$event.times, 
+                    time[actual.smask], model[[model.index]]$uncens, 
+                    weightmat.times.risk.sum, model[[model.index]]$weight.at.times)
+                }
+                else {
+                  model[[model.index]]$Lambda[actual.step + 1, 
+                    ] <- calc.Lambda(model[[model.index]]$event.times, 
+                    time[actual.smask], model[[model.index]]$uncens, 
+                    weightmat.times.risk.sum, weights[actual.smask])
+                }
+                actual.stepsize.factor <- ifelse(length(stepsize.factor) >= 
+                  min.index, stepsize.factor[min.index], stepsize.factor[1])
+                  cat("min.index", min.index,"\n")
+                if (actual.stepsize.factor != 1 && model[[cause.index]]$ml.fraction[min.index] < 
+                  1) {
+                  model[[model.index]]$penalty <- update.penalty(model[[model.index]]$penalty, 
+                    sf.scheme, actual.stepsize.factor, min.index, 
+                    model[[model.index]]$ml.fraction, pendistmat, 
+                    connected.index, penpos, model[[model.index]]$weightmat, 
+                    model[[model.index]]$actual.risk.score, x, 
+                    subset.time.order[stratum == object$strata[stratum.index]], 
+                    pen.index, model[[model.index]]$n.uncens, 
+                    model[[model.index]]$uncens, n, weightmat.times.risk, 
+                    weightmat.times.risk.sum, object$xnames, 
+                    trace)
+                }
+            }
+        }
+    }
+    if (trace) 
+        cat("\n")
+    warnsteps <- unlist(lapply(model, function(arg) arg$warnstep))
+    if (length(warnsteps) > 0) 
+        warning(paste("potentially attempted to move towards a nonexisting maximum likelihood solution around step", 
+            min(warnsteps)))
+    unpen.warns <- unlist(lapply(model, function(arg) arg$unpen.warn))
+    if (length(unpen.warns) > 0) 
+        warning(paste("estimation for unpenalized covariates did not converge starting at step ", 
+            min(unpen.warns), ". Values were kept fixed and might be unreliable", 
+            sep = ""))
+    if (!is.null(object$unpen.index)) {
+        object$p <- object$p + length(object$unpen.index)
+        for (i in seq(along = model)) {
+            combined.coefficients <- Matrix::Matrix(0, nrow(model[[i]]$coefficients), 
+                object$p)
+            combined.coefficients[, pen.index] <- model[[i]]$coefficients
+            combined.coefficients[, object$unpen.index] <- model[[i]]$unpen.coefficients
+            model[[i]]$coefficients <- combined.coefficients
+        }
+    }
+    class(object) <- "CoxBoost"
+    if (length(model) == 1) {
+        if (stepsize.factor != 0) {
+            object$penalty <- model[[1]]$penaltymat
+        }
+        else {
+            object$penalty <- model[[1]]$penalty
+        }
+        object$event.times <- model[[1]]$event.times
+        object$coefficients <- model[[1]]$coefficients
+        object$linear.predictor <- model[[1]]$linear.predictor
+        object$Lambda <- model[[1]]$Lambda
+        if (return.score) 
+            object$scoremat <- model[[1]]$scoremat
+        object$logplik <- predict(object, type = "logplik")
+    }
+    else {
+        object$model <- list()
+        for (i in seq(along = model)) {
+            object$model[[i]] <- list(cause.code = model[[i]]$code, 
+                stratum = model[[i]]$stratum)
+            object$model[[i]]$stepno <- model[[i]]$stepno
+            if (stepsize.factor != 0) {
+                object$model[[i]]$penalty <- model[[i]]$penaltymat
+            }
+            else {
+                object$model[[i]]$penalty <- model[[i]]$penalty
+            }
+            object$model[[i]]$event.times <- model[[i]]$event.times
+            object$model[[i]]$weight.at.times <- model[[i]]$weight.at.times
+            object$model[[i]]$coefficients <- model[[i]]$coefficients
+            object$model[[i]]$linear.predictor <- model[[i]]$linear.predictor
+            object$model[[i]]$Lambda <- model[[i]]$Lambda
+            if (return.score) 
+                object$model[[i]]$scoremat <- model[[i]]$scoremat
+        }
+        names(object$model) <- object$causes
+        actual.logplik <- predict(object, type = "logplik")
+        for (cause.index in seq(along = object$causes)) {
+            for (stratum.index in seq(along = object$strata)) {
+                object$model[[(cause.index - 1) * length(object$strata) + 
+                  stratum.index]]$logplik <- actual.logplik[[cause.index]]
+            }
+        }
+    }
+    object
+}

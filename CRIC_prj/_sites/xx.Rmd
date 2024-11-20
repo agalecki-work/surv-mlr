@@ -1,0 +1,182 @@
+---
+title: "CRIC: (`r parms$anl_name`:`r parms$t_varsid`)"
+date: "Last updated: `r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r knitr-setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment="#>")
+```
+
+
+```{r setup, include=FALSE}
+# Define the variables used in the title
+anl_name = parms$anl_name
+t_varsid = parms$t_varsid
+prj_Path    = ".."
+anl_Path = paste0(prj_Path,"/", anl_name)
+
+# source tvars_mtx
+fpath = paste0(prj_Path, "/cric_tvars_mtx.inc")
+source(fpath)
+
+# src Info
+
+fpath = paste0(anl_Path,"/_Infoxvars.inc")
+source(fpath)
+#tvar_name = Info$target_cols["time"]
+selct = tvars_mtx[tvars_mtx[, "id"] == t_varsid, ]
+tvar_name  = selct["time"]
+event_num  = selct["event.num"]
+event_fac  = selct["event.fac"]
+tvnpath    =  paste0(anl_Path,"/",t_varsid,tvar_name)
+RdataPath =paste0(tvnpath, "_cva_glmnet.Rdata")
+xlsxfPath = paste0(tvnpath,"_summary.xlsx")
+variaPath = paste0(tvnpath, "_varia.Rdata")
+# dim(data1e)
+
+
+```
+# Intro
+
+Results for time variable:
+
+```{r target_cols}
+cat(t_varsid, ":", tvar_name, event_num, event_fac)
+```
+
+# Input 
+
+## `r anl_name` info
+
+
+* glmnet_args
+
+```{r glmnet_args, results='markup'}
+glmnet_args
+```
+* ctree_args
+
+```{r ctree_args, results='markup'}
+ctree_args
+```
+* cv_coxboost_args
+
+```{r cv_coxboost_args, results='markup'}
+cv_coxboost_args
+```
+* Info
+
+```{r Info, results='markup'}
+Info
+```
+
+# Data
+
+```{r data1e_nms}
+RdataRes = load(RdataPath)
+ResOption1 = if ("surv.cva_glmnet_learners" %in% RdataRes) TRUE else FALSE
+names(data1e)
+```
+
+Table for `train_ind` variable
+  
+```{r table_train_ind}
+table(train_ind = data1e$train_ind)
+```
+
+
+# Results
+
+Results are stored in
+
+ * .xlsx (`r xlsxfPath`)
+ * _cva_glmnet.Rdata (`r RdataPath`)
+ * _varia.Rdata (`r variaPath`)
+
+Worksheet names in .xlsx file:
+
+
+```{r wbSheetNames}
+ wb = loadWorkbook(xlsxfPath)
+ getSheetNames(xlsxfPath)
+```
+
+Objects stored in _cva_glmnet.Rdata file
+
+```{r RdataObjectNames}
+RdataRes
+```
+
+
+
+Glance results: 
+
+
+```{r  glanceAll}
+  ## fpath1 =paste0(anl_Path, "/_prj_info.xlsx")
+  glanceAll = readWorkbook(wb, "glanceAll")
+  glancex = glanceAll %>%  mutate(across(where(is.numeric),~ round(.x, digits=3))) 
+  glancex
+```
+
+tidyAll
+
+```{r  tidyAll}
+
+  tidyAll = readWorkbook(wb, "tidyAll")
+  tidyx = tidyAll %>%  mutate(across(where(is.numeric),~ round(.x, digits=3))) 
+  tidyx
+```
+
+Beta coefficients for diffrent values of alpha hyperparameter:
+
+
+```{r  coefAll}
+  ## fpath1 =paste0(anl_Path, "/_prj_info.xlsx")
+  coefAll = readWorkbook(wb, "coefAll")
+  coefx = coefAll %>%  mutate(across(where(is.numeric),~ round(.x, digits=3))) 
+  coefx
+```
+
+# LASSO 
+
+## CV-Plot
+
+```{r cv.fit-lasso, include=ResOption1, fig.cap = "Fig: Cross-validation plot"}
+cva1_learner= surv.cva_glmnet_learners[["a.1"]]
+cva1_fit =cva1_learner$model$model
+plot(cva1_fit)
+```
+
+## Prediction
+
+Prediction on test data
+
+```{r predict-lasso, include=ResOption1}
+cva1_prediction= surv.cva_glmnet_prediction[["a.1"]]
+#cva1_fit =cva1_prediction1$model$model
+#plot(cva1_fit)
+```
+
+# Log
+
+```{r log-execution,results="asis" }
+nms = load(file = variaPath)
+writeLines(logx)
+```
+
+
+
+
+
+
+
+# Conclusion
+
+::: {#box1 .green-box}
+Wrapping it up!
+:::
+
+
+
+# References {-}

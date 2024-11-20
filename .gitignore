@@ -8,6 +8,9 @@
 *.xlsx
 *.pdf
 *.xls
+*.sas7bdat
+
+wip/
 
 # .Rprog
 *.Rprog

@@ -1,0 +1,161 @@
+---
+title: "CRIC: (`r parms$anl_name`)"
+date: "Last updated: `r format(Sys.time(), '%d %B, %Y')`"
+bibliography: references.bib
+link-citations: true
+# csl: nature.csl                        # Citation Style Language file
+---
+
+```{r knitr-setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment="#>")
+```
+
+# Project info 
+
+```{r setup, include=FALSE}
+# Define variables used in the title
+anl_name = parms$anl_name
+link_prj_Info = paste0("../../prj_Info.inc")
+link_add_vars = paste0("../../cric_add_variables.inc")
+link_complete_data = paste0("../../02-cric-df_complete.R")
+link_tvars_mtx = paste0("../../cric_tvars_mtx.inc")
+link_tvars_mtx1 = paste0("../cric_tvars_mtx.inc")
+
+```
+
+Project related internal links
+
+* [prj_Info.inc](`r link_prj_Info`)
+* [02-cric-df_complete.R](`r link_complete_data`)
+* [cric_add_variables.inc](`r link_add_vars`)  script used to derive new/modify existing variables in df_complete data
+* [cric_tvars_mtx.inc](`r link_tvars_mtx`)
+
+Project info:
+
+```{r prj_info}   #, results='markup'}
+prj_Path    = ".."
+fpath = paste0(prj_Path, "/prj_Info.inc") 
+source(fpath)
+prj_Info
+
+```
+
+* Original data name: `r prj_Info$original_nms["df"]` stored in `r  paste0("./data/", prj_Info$original_nms["Rdata"])`
+* Data frame `df_complete` stored in `r prj_Info$complete_nms["Rdata"]`
+* `d_cols` vector
+```{r d_cols-vector}
+tmp = prj_Info$d_cols
+tmp1 = c(names(tmp))
+dx = rbind(tmp1,tmp)
+rownames(dx) = NULL
+```
+
+# Data
+
+## Original data
+
+Glimpse of original data
+
+```{r original_data, results='markup'}
+Rdata_path = paste0("../data/", prj_Info$original_nms["Rdata"])
+df_load = load(Rdata_path)
+df_orig  =  get(df_load)
+glimpse(df_orig)
+```
+
+### Missing values
+
+Report on missing values
+
+```{r df_orig_miss}
+generate_missing_value_report <- function(data, ...) {
+
+  missing_summary <- data %>%
+    summarise_all(~ sum(is.na(.))) %>%
+    pivot_longer(cols = everything(), names_to = "Column", values_to = "MissingCount") %>%
+      filter(MissingCount != 0)
+  
+  cat("\nSummary of Missing Values by Column:")
+  print(missing_summary, n=99)
+  
+  # Generate skim summary
+  skimmed_data = skim(data, ...)
+  return(skimmed_data)
+}
+
+# Generate the report
+skimmed_data = generate_missing_value_report(df_orig, .data_name = "df_orig")
+knit_print(skimmed_data)  
+
+```
+
+Missing values plot
+
+
+```{r missing_plot, fig.width=6, fig.height=4, fig.align='center', fig.cap='Missing values Plot', out.width='80%'}
+# Example plot
+generate_missing_value_plot <- function(data) {
+  missing_plot <- data %>%
+    summarise_all(~ sum(is.na(.)) / n()) %>%
+    pivot_longer(cols = everything(), names_to = "Column", values_to = "MissingPercent") %>%
+      filter(MissingPercent !=0)
+  
+  print(ggplot(missing_plot, aes(x = Column, y = MissingPercent)) +
+          geom_bar(stat = "identity", fill = "steelblue") +
+          coord_flip() +
+          labs(title = "Missing Values by Column", x = "Column", y = "Percentage of Missing Values") +
+          theme_minimal())
+  }
+generate_missing_value_plot(df_orig)
+```
+
+
+## Complete data
+
+Link to [code](`r link_complete_data`) used to derive df_complete data
+
+
+Glimpse of complete dataset (after imputing missing values)
+
+```{r complete_data_glimpse, results='markup'}
+Rdata_path = paste0("../data/", prj_Info$complete_nms["Rdata"])
+obj_load = load(Rdata_path)
+df_complete  =  get(df_load)
+glimpse(df_complete)
+```
+
+## Derived data
+
+Link to [code](`r link_add_vars`) used to derive new/modify existing variables in df_complete data
+
+
+# Results
+
+Time vars presented in this website:
+
+
+```{r tvars_mtx}
+
+source(link_tvars_mtx1) #  tvars_mtx
+selx = pmatch(tvar_ids_vec,tvars_mtx[, "id"])
+tvars_selx =tvars_mtx[selx,]
+tvars_selx
+```
+
+```{r Info-list, results='markup'}
+anl_Path = paste0(prj_Path,"/_Info/",anl_name)
+fpath = paste0(anl_Path,".inc")
+source(fpath)
+Info
+```
+
+# Citations
+
+* See [@mclernon2023assessing]   at [URL](https://www.acpjournals.org/doi/pdf/10.7326/m22-0844?casa_token=cZTw6iuKYWAAAAAA:lo2v5N4EeqD_0O-h5j3RtaZuHYYBDJc5nOMt79l2lrE8HK3mjKjcyKl_XUJdQiUPMI2VKA4KB5tZlg)
+* See [@mlr3]
+* See [@sanderson2013derivation] at [URL](https://link.springer.com/content/pdf/10.1186/1471-2288-13-113.pdf)
+* See [@van2022validation] at [URL](https://www.bmj.com/content/bmj/377/bmj-2021-069249.full.pdf?casa_token=bzl02Sjp8kYAAAAA:3Xi72CFbReAhAKtCP_7-MfnD8ucX3v78v1LVIS7gG7mEzkwkJjuTmLX7RS1OjI-AH6QDy8TqrII)
+
+# References {-}
+
+

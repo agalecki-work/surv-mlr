@@ -1,0 +1,28 @@
+---
+title: "Home: `r parms$anl_name`"
+author: "[atg](https://github.com/agalecki-work/surv-mlr)"
+---
+
+
+# Welcome
+
+This is the home page of website for the CRIC project.
+
+# Files/Folders
+
+```{r Rscriptnms, echo=FALSE, results='asis'}
+dir0 = ".."              #_sites
+dirx = dirname(dir0)    # CRIC_prj parent directory
+dirx_link = paste0("[Links](", dir0,") to files \n")
+cat(paste(dirx_link, collapse = "\n"))
+
+```
+
+
+# R session info {-}
+
+```{r session info, comment=""}
+getwd()
+xfun::session_info()
+```
+

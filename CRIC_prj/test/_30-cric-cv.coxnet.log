@@ -1,0 +1,478 @@
+============ 30-cric-cv.coxnet.R executed 
+Running script from the current directory: C:\Users\agalecki\Documents\GitHub\surv-mlr 
+--- Running iteration 01 started on Tue 11/19/2024 12:53:36.08 
+running
+  'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:test:30-cric-cv.coxnet 01'
+
+* ====== Script executed in batch mode for tvar=01 
+* Time stamp: 2024-11-19 12:53:36.709317 
+[1] "2024-11-19 12:53:36 EST"
+* Project name: CRIC_prj 
+Loaded glmnet 4.1-8
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'data.table'
+
+The following objects are masked from 'package:dplyr':
+
+    between, first, last
+
+Version: 0.2.1. Built on: 2023-01-06
+
+Attaching package: 'tidyr'
+
+The following objects are masked from 'package:Matrix':
+
+    expand, pack, unpack
+
+--- Packages loaded 
+[1] "original_nms"  "complete_nms"  "add_vars_name"
+* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
+* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
+--- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
+--- Info list on analysis in subfolder:  test  created 
+* Subset `df_complete` (optional): CKD == 'CKD3b' 
+* `df_complete` before subset nrows =1170 
+* `df_complete` after subset nrows =601 
+Info$d_col variables:  PID wght CHF 
+-- Time var nms =  TIME_ESRD , status = ESRD , id = 01 
+--- Table for event variable: ` ESRD ` 
+ 349 252 
+--- Check `keep_vars`:  ... OK 
+* Admin censoring at 20 years (maximum observed time=16.5) 
+* --- Event variable has 2 levels 
+* --- mlr3:task1 created. CCH is TRUE 
+--- task1e created 
+--- task1e created nevent levels:  2 
+--- Vector `pen.fac` with  21  elements created 
+--- `task1e` partitioned with ratio  0.8  
+* alpha names = a.25, a.50, a.75, a.1 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.25 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.5 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.75 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 1 ) 
+New names:
+• `` -> `...1`
+• `` -> `...2`
+• `` -> `...3`
+• `` -> `...4`
+* Objects: data1e, logx, prj_Info, Info, surv.cva_glmnet_learners, surv.cva_glmnet_prediction saved in './CRIC_prj/test/01TIME_ESRD_cva_glmnet.Rdata 
+---  surv.ctree processed ... 
+---  surv.cv_coxboost processed ... 
+: Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/test/01TIME_ESRD_varia.Rdata` 
+* Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/test/01TIME_ESRD_summary.xlsx 
+Time stamp. t_varsid:  01  
+[1] "2024-11-19 12:54:01 EST"
+--- Running iteration 02 started on Tue 11/19/2024 12:54:01.55 
+running
+  'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:test:30-cric-cv.coxnet 02'
+
+* ====== Script executed in batch mode for tvar=02 
+* Time stamp: 2024-11-19 12:54:01.821367 
+[1] "2024-11-19 12:54:01 EST"
+* Project name: CRIC_prj 
+Loaded glmnet 4.1-8
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'data.table'
+
+The following objects are masked from 'package:dplyr':
+
+    between, first, last
+
+Version: 0.2.1. Built on: 2023-01-06
+
+Attaching package: 'tidyr'
+
+The following objects are masked from 'package:Matrix':
+
+    expand, pack, unpack
+
+--- Packages loaded 
+[1] "original_nms"  "complete_nms"  "add_vars_name"
+* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
+* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
+--- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
+--- Info list on analysis in subfolder:  test  created 
+* Subset `df_complete` (optional): CKD == 'CKD3b' 
+* `df_complete` before subset nrows =1170 
+* `df_complete` after subset nrows =601 
+Info$d_col variables:  PID wght CHF 
+-- Time var nms =  TIME_LOSS50 , status = LOSS50 , id = 02 
+--- Table for event variable: ` LOSS50 ` 
+ 308 293 
+--- Check `keep_vars`:  ... OK 
+* Admin censoring at 20 years (maximum observed time=16.5) 
+* --- Event variable has 2 levels 
+* --- mlr3:task1 created. CCH is TRUE 
+--- task1e created 
+--- task1e created nevent levels:  2 
+--- Vector `pen.fac` with  21  elements created 
+--- `task1e` partitioned with ratio  0.8  
+* alpha names = a.25, a.50, a.75, a.1 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.25 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.5 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.75 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 1 ) 
+New names:
+• `` -> `...1`
+• `` -> `...2`
+• `` -> `...3`
+• `` -> `...4`
+* Objects: data1e, logx, prj_Info, Info, surv.cva_glmnet_learners, surv.cva_glmnet_prediction saved in './CRIC_prj/test/02TIME_LOSS50_cva_glmnet.Rdata 
+---  surv.ctree processed ... 
+---  surv.cv_coxboost processed ... 
+: Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/test/02TIME_LOSS50_varia.Rdata` 
+* Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/test/02TIME_LOSS50_summary.xlsx 
+Time stamp. t_varsid:  02  
+[1] "2024-11-19 12:54:29 EST"
+--- Running iteration 03 started on Tue 11/19/2024 12:54:30.24 
+running
+  'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:test:30-cric-cv.coxnet 03'
+
+* ====== Script executed in batch mode for tvar=03 
+* Time stamp: 2024-11-19 12:54:30.505402 
+[1] "2024-11-19 12:54:30 EST"
+* Project name: CRIC_prj 
+Loaded glmnet 4.1-8
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'data.table'
+
+The following objects are masked from 'package:dplyr':
+
+    between, first, last
+
+Version: 0.2.1. Built on: 2023-01-06
+
+Attaching package: 'tidyr'
+
+The following objects are masked from 'package:Matrix':
+
+    expand, pack, unpack
+
+--- Packages loaded 
+[1] "original_nms"  "complete_nms"  "add_vars_name"
+* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
+* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
+--- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
+--- Info list on analysis in subfolder:  test  created 
+* Subset `df_complete` (optional): CKD == 'CKD3b' 
+* `df_complete` before subset nrows =1170 
+* `df_complete` after subset nrows =601 
+Info$d_col variables:  PID wght CHF 
+-- Time var nms =  TIME_LOSS50_ESRD , status = LOSS50_ESRD , id = 03 
+--- Table for event variable: ` LOSS50_ESRD ` 
+ 307 294 
+--- Check `keep_vars`:  ... OK 
+* Admin censoring at 20 years (maximum observed time=16.5) 
+* --- Event variable has 2 levels 
+* --- mlr3:task1 created. CCH is TRUE 
+--- task1e created 
+--- task1e created nevent levels:  2 
+--- Vector `pen.fac` with  21  elements created 
+--- `task1e` partitioned with ratio  0.8  
+* alpha names = a.25, a.50, a.75, a.1 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.25 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.5 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.75 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 1 ) 
+New names:
+• `` -> `...1`
+• `` -> `...2`
+• `` -> `...3`
+• `` -> `...4`
+* Objects: data1e, logx, prj_Info, Info, surv.cva_glmnet_learners, surv.cva_glmnet_prediction saved in './CRIC_prj/test/03TIME_LOSS50_ESRD_cva_glmnet.Rdata 
+---  surv.ctree processed ... 
+---  surv.cv_coxboost processed ... 
+: Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/test/03TIME_LOSS50_ESRD_varia.Rdata` 
+* Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/test/03TIME_LOSS50_ESRD_summary.xlsx 
+Time stamp. t_varsid:  03  
+[1] "2024-11-19 12:54:59 EST"
+--- Running iteration 10 started on Tue 11/19/2024 12:54:59.73 
+running
+  'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:test:30-cric-cv.coxnet 10'
+
+* ====== Script executed in batch mode for tvar=10 
+* Time stamp: 2024-11-19 12:54:59.985689 
+[1] "2024-11-19 12:54:59 EST"
+* Project name: CRIC_prj 
+Loaded glmnet 4.1-8
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'data.table'
+
+The following objects are masked from 'package:dplyr':
+
+    between, first, last
+
+Version: 0.2.1. Built on: 2023-01-06
+
+Attaching package: 'tidyr'
+
+The following objects are masked from 'package:Matrix':
+
+    expand, pack, unpack
+
+--- Packages loaded 
+[1] "original_nms"  "complete_nms"  "add_vars_name"
+* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
+* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
+--- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
+--- Info list on analysis in subfolder:  test  created 
+* Subset `df_complete` (optional): CKD == 'CKD3b' 
+* `df_complete` before subset nrows =1170 
+* `df_complete` after subset nrows =601 
+Info$d_col variables:  PID wght CHF 
+-- Time var nms =  TIME_DEATH , status = DEAD , id = 10 
+--- Table for event variable: ` DEAD ` 
+ 263 338 
+--- Check `keep_vars`:  ... OK 
+* Admin censoring at 20 years (maximum observed time=16.88) 
+* --- Event variable has 2 levels 
+* --- mlr3:task1 created. CCH is TRUE 
+--- task1e created 
+--- task1e created nevent levels:  2 
+--- Vector `pen.fac` with  21  elements created 
+--- `task1e` partitioned with ratio  0.8  
+* alpha names = a.25, a.50, a.75, a.1 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.25 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.5 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 0.75 ) 
+--- Learner defined (type =`surv.cv_glmnet`, alpha= 1 ) 
+New names:
+• `` -> `...1`
+• `` -> `...2`
+• `` -> `...3`
+• `` -> `...4`
+* Objects: data1e, logx, prj_Info, Info, surv.cva_glmnet_learners, surv.cva_glmnet_prediction saved in './CRIC_prj/test/10TIME_DEATH_cva_glmnet.Rdata 
+---  surv.ctree processed ... 
+---  surv.cv_coxboost processed ... 
+: Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/test/10TIME_DEATH_varia.Rdata` 
+* Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/test/10TIME_DEATH_summary.xlsx 
+Time stamp. t_varsid:  10  
+[1] "2024-11-19 12:55:30 EST"
+--- Running iteration 31 started on Tue 11/19/2024 12:55:30.57 
+running
+  'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:test:30-cric-cv.coxnet 31'
+
+* ====== Script executed in batch mode for tvar=31 
+* Time stamp: 2024-11-19 12:55:30.840446 
+[1] "2024-11-19 12:55:30 EST"
+* Project name: CRIC_prj 
+Loaded glmnet 4.1-8
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'data.table'
+
+The following objects are masked from 'package:dplyr':
+
+    between, first, last
+
+Version: 0.2.1. Built on: 2023-01-06
+
+Attaching package: 'tidyr'
+
+The following objects are masked from 'package:Matrix':
+
+    expand, pack, unpack
+
+--- Packages loaded 
+[1] "original_nms"  "complete_nms"  "add_vars_name"
+* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
+* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
+--- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
+--- Info list on analysis in subfolder:  test  created 
+* Subset `df_complete` (optional): CKD == 'CKD3b' 
+* `df_complete` before subset nrows =1170 
+* `df_complete` after subset nrows =601 
+Info$d_col variables:  PID wght CHF 
+-- Time var nms =  eTIME_ESRD , status = event_ESRDx , id = 31 
+--- Table for event factor: ` event_ESRDf ` 
+ censor ESRD death 
+ 157 252 192 
+--- Check `keep_vars`:  ... OK 
+* Admin censoring at 20 years (maximum observed time=16.88) 
+* --- Event variable has 3 levels 
+* --- mlr3:task1 created. CCH is TRUE 
+--- task1e created 
+--- task1e created nevent levels:  3 
+--- Vector `pen.fac` with  21  elements created 
+--- `task1e` partitioned with ratio  0.8  
+* alpha names = a.25, a.50, a.75, a.1 
+save3 
+save3 
+save3 
+save3 
+??? 
+ [1] "cv.glmnet"
+???1 
+ ???2a 
+ ???3 
+ ??? 
+ [1] "cv.glmnet"
+???1 
+ ???2a 
+ ???3 
+ ??? 
+ [1] "cv.glmnet"
+???1 
+ ???2a 
+ ???3 
+ ??? 
+ [1] "cv.glmnet"
+???1 
+ ???2a 
+ ???3 
+ * Objects: data1e, logx, prj_Info, Info, cva_glmnet_fits saved in './CRIC_prj/test/31eTIME_ESRD_cva_glmnet.Rdata 
+* Sheet_names: Info, glanceAll, tidyAll, coefAll in ./CRIC_prj/test/31eTIME_ESRD_summary.xlsx 
+Time stamp. t_varsid:  31  
+[1] "2024-11-19 12:55:35 EST"
+--- Running iteration 32 started on Tue 11/19/2024 12:55:35.69 
+running
+  'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:test:30-cric-cv.coxnet 32'
+
+* ====== Script executed in batch mode for tvar=32 
+* Time stamp: 2024-11-19 12:55:35.939034 
+[1] "2024-11-19 12:55:35 EST"
+* Project name: CRIC_prj 
+Loaded glmnet 4.1-8
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'data.table'
+
+The following objects are masked from 'package:dplyr':
+
+    between, first, last
+
+Version: 0.2.1. Built on: 2023-01-06
+
+Attaching package: 'tidyr'
+
+The following objects are masked from 'package:Matrix':
+
+    expand, pack, unpack
+
+--- Packages loaded 
+[1] "original_nms"  "complete_nms"  "add_vars_name"
+* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
+* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
+--- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
+--- Info list on analysis in subfolder:  test  created 
+* Subset `df_complete` (optional): CKD == 'CKD3b' 
+* `df_complete` before subset nrows =1170 
+* `df_complete` after subset nrows =601 
+Info$d_col variables:  PID wght CHF 
+-- Time var nms =  eTIME_LOSS50 , status = event_LOSS50x , id = 32 
+--- Table for event factor: ` event_LOSS50f ` 
+ censor LOSS50 death 
+ 140 293 168 
+--- Check `keep_vars`:  ... OK 
+* Admin censoring at 20 years (maximum observed time=16.88) 
+* --- Event variable has 3 levels 
+* --- mlr3:task1 created. CCH is TRUE 
+--- task1e created 
+--- task1e created nevent levels:  3 
+--- Vector `pen.fac` with  21  elements created 
+--- `task1e` partitioned with ratio  0.8  
+* alpha names = a.25, a.50, a.75, a.1 
+save3 
+save3 
+save3 
+save3 
+??? 
+ [1] "cv.glmnet"
+???1 
+ ???2a 
+ ???3 
+ ??? 
+ [1] "cv.glmnet"
+???1 
+ ???2a 
+ ???3 
+ ??? 
+ [1] "cv.glmnet"
+???1 
+ ???2a 
+ ???3 
+ ??? 
+ [1] "cv.glmnet"
+???1 
+ ???2a 
+ ???3 
+ * Objects: data1e, logx, prj_Info, Info, cva_glmnet_fits saved in './CRIC_prj/test/32eTIME_LOSS50_cva_glmnet.Rdata 
+* Sheet_names: Info, glanceAll, tidyAll, coefAll in ./CRIC_prj/test/32eTIME_LOSS50_summary.xlsx 
+Time stamp. t_varsid:  32  
+[1] "2024-11-19 12:55:40 EST"
