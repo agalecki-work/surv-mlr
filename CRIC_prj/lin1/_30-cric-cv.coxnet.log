@@ -1,12 +1,12 @@
 ============ 30-cric-cv.coxnet.R executed 
 Running script from the current directory: C:\Users\agalecki\Documents\GitHub\surv-mlr 
---- Running iteration 01 started on Tue 11/19/2024 13:06:36.54 
+--- Running iteration 01 started on Tue 11/19/2024 22:09:53.67 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 01'
 
 * ====== Script executed in batch mode for tvar=01 
-* Time stamp: 2024-11-19 13:06:36.816157 
-[1] "2024-11-19 13:06:36 EST"
+* Time stamp: 2024-11-19 22:09:54.108408 
+[1] "2024-11-19 22:09:54 EST"
 * Project name: CRIC_prj 
 Loaded glmnet 4.1-8
 
@@ -74,14 +74,14 @@ New names:
 : Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/lin1/01TIME_ESRD_varia.Rdata` 
 * Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/lin1/01TIME_ESRD_summary.xlsx 
 Time stamp. t_varsid:  01  
-[1] "2024-11-19 13:07:26 EST"
---- Running iteration 02 started on Tue 11/19/2024 13:07:26.70 
+[1] "2024-11-19 22:10:50 EST"
+--- Running iteration 02 started on Tue 11/19/2024 22:10:50.53 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 02'
 
 * ====== Script executed in batch mode for tvar=02 
-* Time stamp: 2024-11-19 13:07:26.950216 
-[1] "2024-11-19 13:07:26 EST"
+* Time stamp: 2024-11-19 22:10:50.896697 
+[1] "2024-11-19 22:10:50 EST"
 * Project name: CRIC_prj 
 Loaded glmnet 4.1-8
 
@@ -149,14 +149,14 @@ New names:
 : Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/lin1/02TIME_LOSS50_varia.Rdata` 
 * Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/lin1/02TIME_LOSS50_summary.xlsx 
 Time stamp. t_varsid:  02  
-[1] "2024-11-19 13:08:27 EST"
---- Running iteration 03 started on Tue 11/19/2024 13:08:28.13 
+[1] "2024-11-19 22:12:01 EST"
+--- Running iteration 03 started on Tue 11/19/2024 22:12:02.08 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 03'
 
 * ====== Script executed in batch mode for tvar=03 
-* Time stamp: 2024-11-19 13:08:28.393529 
-[1] "2024-11-19 13:08:28 EST"
+* Time stamp: 2024-11-19 22:12:02.339519 
+[1] "2024-11-19 22:12:02 EST"
 * Project name: CRIC_prj 
 Loaded glmnet 4.1-8
 
@@ -224,14 +224,14 @@ New names:
 : Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/lin1/03TIME_LOSS50_ESRD_varia.Rdata` 
 * Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/lin1/03TIME_LOSS50_ESRD_summary.xlsx 
 Time stamp. t_varsid:  03  
-[1] "2024-11-19 13:09:30 EST"
---- Running iteration 10 started on Tue 11/19/2024 13:09:30.33 
+[1] "2024-11-19 22:13:14 EST"
+--- Running iteration 10 started on Tue 11/19/2024 22:13:15.18 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 10'
 
 * ====== Script executed in batch mode for tvar=10 
-* Time stamp: 2024-11-19 13:09:30.59339 
-[1] "2024-11-19 13:09:30 EST"
+* Time stamp: 2024-11-19 22:13:15.507609 
+[1] "2024-11-19 22:13:15 EST"
 * Project name: CRIC_prj 
 Loaded glmnet 4.1-8
 
@@ -299,14 +299,14 @@ New names:
 : Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/lin1/10TIME_DEATH_varia.Rdata` 
 * Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/lin1/10TIME_DEATH_summary.xlsx 
 Time stamp. t_varsid:  10  
-[1] "2024-11-19 13:10:23 EST"
---- Running iteration 31 started on Tue 11/19/2024 13:10:23.42 
+[1] "2024-11-19 22:14:22 EST"
+--- Running iteration 31 started on Tue 11/19/2024 22:14:22.57 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 31'
 
 * ====== Script executed in batch mode for tvar=31 
-* Time stamp: 2024-11-19 13:10:23.688503 
-[1] "2024-11-19 13:10:23 EST"
+* Time stamp: 2024-11-19 22:14:22.908039 
+[1] "2024-11-19 22:14:22 EST"
 * Project name: CRIC_prj 
 Loaded glmnet 4.1-8
 
@@ -387,14 +387,14 @@ save3
  * Objects: data1e, logx, prj_Info, Info, cva_glmnet_fits saved in './CRIC_prj/lin1/31eTIME_ESRD_cva_glmnet.Rdata 
 * Sheet_names: Info, glanceAll, tidyAll, coefAll in ./CRIC_prj/lin1/31eTIME_ESRD_summary.xlsx 
 Time stamp. t_varsid:  31  
-[1] "2024-11-19 13:10:30 EST"
---- Running iteration 32 started on Tue 11/19/2024 13:10:30.54 
+[1] "2024-11-19 22:14:31 EST"
+--- Running iteration 32 started on Tue 11/19/2024 22:14:31.92 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 32'
 
 * ====== Script executed in batch mode for tvar=32 
-* Time stamp: 2024-11-19 13:10:30.797402 
-[1] "2024-11-19 13:10:30 EST"
+* Time stamp: 2024-11-19 22:14:32.197096 
+[1] "2024-11-19 22:14:32 EST"
 * Project name: CRIC_prj 
 Loaded glmnet 4.1-8
 
@@ -475,4 +475,4 @@ save3
  * Objects: data1e, logx, prj_Info, Info, cva_glmnet_fits saved in './CRIC_prj/lin1/32eTIME_LOSS50_cva_glmnet.Rdata 
 * Sheet_names: Info, glanceAll, tidyAll, coefAll in ./CRIC_prj/lin1/32eTIME_LOSS50_summary.xlsx 
 Time stamp. t_varsid:  32  
-[1] "2024-11-19 13:10:37 EST"
+[1] "2024-11-19 22:14:40 EST"

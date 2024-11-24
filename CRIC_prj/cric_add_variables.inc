@@ -1,4 +1,6 @@
 # Add variables to `complete_df`
+# Input: `df_complete`
+# Output: `df_complete` with vars added
 
 
 # CRIC `df_complete`: 
@@ -99,7 +101,7 @@ df_complete$event_LOSS50_ESRD10f = event_LOSS50_ESRD10f   # factor
 
 
 # `df_complete`: Convert to factors. Create weights, if needed etc
-
+set.seed     = 1234
 df_complete = within(df_complete,{
    ACRcat   = factor(ACRcat)
    CKD      = factor(CKD)
@@ -108,5 +110,6 @@ df_complete = within(df_complete,{
    RACE_CAT_1 = factor(RACE_CAT_1)
    wght     = 1.2 # new  variable created
    log_OL1  = log(OL1)
+   train_idx = runif(n= nrow(df_complete)) > 0.8 
 })
 

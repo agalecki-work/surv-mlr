@@ -4,7 +4,7 @@ rm(list=ls())
 
 logx = NULL
 
-BATmode = TRUE # TRUE # !!!
+BATmode = FALSE # TRUE # !!!
 
 if (BATmode){ # Multiple t_vars will be processed in a batch mode
   args <- commandArgs(trailingOnly = TRUE)
@@ -190,13 +190,18 @@ cat(txt, "\n")
 logx= c(logx, txt)
 
 CCH = if ("subcohort" %in% names(dcol_nms)) TRUE else FALSE
+
+# `task1`
 if (CCH) source("./src/create_task1_cch.R") else source("./src/create_task1.R")
 txt =paste0("* --- mlr3:task1 created. CCH is ", CCH)
 cat(txt, "\n")
 logx= c(logx, txt)
 
+# `task1e`
 source("./src/create_task1e.R")
-cat("--- task1e created \n")
+txt = "--- mlr3:task1e created"
+cat(txt, "\n")
+logx= c(logx, txt)
 
  cat("--- task1e created nevent levels: ", length(event_lvls),  "\n")
  feature_nms0 = names(task1e$data()) # using df_expanded_num

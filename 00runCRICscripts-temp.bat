@@ -4,7 +4,7 @@ REM Set project, analysis, and script names
 REM Ex: prj_name=CRIC_prj, scriptBaseName=30-cric-cv.coxnet, anl_name=lin1
 set prj_name=CRIC_prj
 set scriptBaseName=30-cric-cv.coxnet
-set anl_name=lin1
+set anl_name=test
 set args=%prj_name%:%anl_name%:%scriptBaseName%
 
 REM Set tvar_ids to hold the sequence of parameters. Ex: tvar_ids=01 02 03 31 32
