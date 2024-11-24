@@ -11,6 +11,11 @@
 *.sas7bdat
 
 wip/
+CRIC_prj/_sites/a_*
+CRIC_prj/_sites/*_files
+
+ACCORD_prj/_sites/a_*
+ACCORD_prj/_sites/*_files
 
 # .Rprog
 *.Rprog
