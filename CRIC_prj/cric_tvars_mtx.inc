@@ -1,3 +1,4 @@
+#==== Generate `tvars_mtx` with 4 columns: 'id', 'time'.'event.num`,`event.fac'
 #---  Target vars `time` and `status` defined
 #-    Note: event variable may have two representations (numeric and factor)
 t_vars01   = c(time= "TIME_ESRD", event= c(num= "ESRD"), id='01')

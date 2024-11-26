@@ -2,9 +2,11 @@
 
 rm(list=ls())
 
+BATmode = FALSE # TRUE # !!!
+
 logx = NULL
 
-BATmode = FALSE # TRUE # !!!
+# ===== Batch mode switch
 
 if (BATmode){ # Multiple t_vars will be processed in a batch mode
   args <- commandArgs(trailingOnly = TRUE)
@@ -25,47 +27,40 @@ if (BATmode){ # Multiple t_vars will be processed in a batch mode
    scriptBaseName  = csplit[3] # Ex. 27-cric-cv.coxnet-withFG
    prj_path        = paste0("./",prj_name) 
    
-
-timeStamp0 = Sys.time()
+ timeStamp0 = Sys.time()
  txt =paste0("* Time stamp: ",timeStamp0)
   cat( txt, "\n")
   logx = c(logx,txt)
+  print(as.POSIXlt(timeStamp0))
 
-print(as.POSIXlt(timeStamp0))
 
-  txt=paste0("* Project name: ", prj_name)
+  txt=paste0("* == Project name: ", prj_name)
   cat( txt, "\n")
   logx = c(logx,txt)
 
-
-
-# Analysis dfInfo
-
-VARNAME  = c("prj_name", "prj_path","scriptName","anl_name", "Time stamp")
-VALUE    = c(prj_name, prj_path,scriptBaseName,anl_name, paste0(as.POSIXlt(timeStamp0))) 
-
-anl_summ = data.frame(VARNAME=VARNAME, VALUE= VALUE)
-
-
-# Load libraries
+# ====== Load libraries
 pkgs <- c("mlr3", "mlr3proba", "mlr3learners", "mlr3extralearners", "glmnet", "mlr3pipelines","dplyr", 
     "data.table", "mlr3viz","survival", "dplyr","openxlsx", "utilsag","tidyr") #
 res = lapply(pkgs, require, quietly =TRUE, character.only = TRUE, warn.conflicts =TRUE )
-source("./R/accept_col_roles.R")
-
 cat("--- Packages loaded \n")
 
+
+# ==== Source R functions
+source("./R/accept_col_roles.R")
+
+# === Create `prj_Info list`
 fpath2 = paste0(prj_path, "/prj_Info.inc")
 source(fpath2) # 
-names(prj_Info) # prj_name, Rdata_name, add_vars_name, etc
+# names(prj_Info) # 
 
-
-txt = paste0("* Sourcing `", fpath2, "`prj_Info` list with ", length(names(prj_Info)), " components created.")
+nms0 = names(prj_Info)
+txt0 =paste(nms0, collapse= "`, `")
+txt = paste0("* Sourcing `", fpath2, ". `prj_Info` list with `", txt0, "` components created.")
 cat(txt, "\n")
 logx = c(logx, txt)
 
 
-####  Load list with the results from 02*.R script, including `df_complete`
+#=====  Load list with the results from 02*.R script, including `df_complete` data frame
 tmp = prj_Info$complete_nms["Rdata"]
 fpath = paste0(prj_path, "/data/", tmp)  
 loaded_objects = load(file = fpath)
@@ -80,7 +75,7 @@ logx = c(logx, txt)
 # print(var_labels)
 nms_df_complete = names(df_complete)
 
-# Source script to add new (or modify existing) variables in `df_complete` (add as many vars as you wish) 
+#=== Source script to add new (or modify existing) variables in `df_complete` (add as many vars as you wish) 
 nms_df_complete0 = names(df_complete)
 add_vars_inc = prj_Info$add_vars_name
 add_vars_path = paste0(prj_path,"/", add_vars_inc)
@@ -92,9 +87,18 @@ logx = c(logx, txt)
 
 nms_df_complete = names(df_complete)
 vars_added = setdiff(nms_df_complete, nms_df_complete0)
-cat("--- Var names added to `df_complete` are stored in `vars_added` vector (n=", length(vars_added), ")\n") 
 
-#=======  Create `tvars_mtx` matrix and `Info_tvars` list 
+txt = paste0("* == Var names added to `df_complete` are stored in `vars_added` vector (n=", length(vars_added), ")" ) 
+cat(txt, "\n")
+logx = c(logx, txt)
+
+
+#=======  Create `Info` list 
+fpath = paste0(prj_path,"/_Info/", anl_name, ".inc")
+source(fpath)
+
+
+#=======  Create `tvars_mtx` matrix 
 fpath = paste0(prj_path, "/cric_tvars_mtx.inc")
 source(fpath)
 
@@ -102,23 +106,18 @@ txt = paste0("* Sourcing ", fpath, ". `cric_tvars_mtx` with ", nrow(tvars_mtx), 
 cat(txt, "\n")
 logx = c(logx, txt)
 
-#=======  Create `Info` list 
-fpath = paste0(prj_path,"/_Info/", anl_name, ".inc")
-source(fpath)
 
-###--- t_vars    = t_vars32 # Choose one
+# ====== Create `Info_tvars` auxiliry
+# Select one: t_varsid; Ex. "01", "02","31" 
 crhs = paste0("t_vars", t_varsid)
-t_vars = eval(parse(text= crhs))
+t_vars = eval(parse(text= crhs)) # `t_vars` is named vector with elements: id, time, event.num (and event.fac?)
 
-dfinfo = data.frame( VARNAME =names(t_vars), VALUE= t_vars)
-rownames(dfinfo) = NULL
-anl_summary=rbind(anl_summ, dfinfo)
 
 Info_tvars = list(
    target_cols   = t_vars
    )
    
-# check `Info_tvars` list
+# check `Info$dcols` vector
 names_dcols0 = names(Info$d_cols)
 names_dcols  = setdiff(names_dcols0, "")
 # cat("Info listcheck: Names of the elements in Info$d_cols vector (Note: id is mandatory) \n", names_dcols, "\n")
@@ -126,12 +125,14 @@ names_dcols  = setdiff(names_dcols0, "")
 
 ## fpath = paste0(prj_path,"/", anl_name, "/InfoList.inc")
 ## source(fpath)
-cat("--- Info list on analysis in subfolder: ", anl_name, " created \n") 
+cat("--- `Info` list on analysis in subfolder: ", anl_name, " created \n") 
 
 # rm(OLx, spline_vars,t1_vars, t2_vars, t3_vars,t4_vars, x_vars, fac_vars,feature_test, feature_vars)
 txt = paste0("* Subset `df_complete` (optional): ", Info$subset)
 cat(txt, "\n")
 logx=c(logx, txt)
+
+# ==== Subsetting `df_complete`
 
 txt= paste0("* `df_complete` before subset nrows =",  nrow(df_complete))
 cat(txt, "\n")
@@ -148,11 +149,22 @@ logx=c(logx, txt)
 nm_id = Info$d_cols["id"]
 dcol_nms =names(Info$d_cols)
 dcol_nms =Info$d_cols[!dcol_nms == ""]
-cat("Info$d_col variables: ", dcol_nms, "\n")
+
+mtx2 =cbind(names(Info$d_cols), Info$d_cols)
+tmp0 =apply(mtx2,1,FUN = function(x) paste(x, collapse=" = ")) # vector
+dcol_txt = paste(tmp0, collapse= "`, `")
+txt = paste0("* == Info$d_col variables: `", dcol_txt,"`")
+cat(txt, "\n")
+logx=c(logx, txt)
+
 time_nm  = Info_tvars$target_cols["time"]      # mandatory string
 evnt_num = Info_tvars$target_cols["event.num"] # mandatory string
 evnt_fac = Info_tvars$target_cols["event.fac"] # character string or NA
-cat("-- Time var nms = ", time_nm, ", status =", evnt_num, ", id =",  Info_tvars$target_cols["id"], "\n")
+tmp_id   = Info_tvars$target_cols["id"]
+txt = paste0("* -- time var id =",tmp_id , ". Time var name = `", time_nm, "` , status =`", evnt_num, "`" )
+cat(txt, "\n")
+logx=c(logx, txt)
+
 if (!is.na(evnt_fac)){
  event_fac = df_complete[[evnt_fac]]           # factor maybe needed 
  event_lvls = levels(event_fac)
@@ -181,7 +193,10 @@ df_complete = apply_admin_censoring(df_complete, time_col = time_nm,
                 censor_time = Info$time_horizon)
                                
 # Note: `df_complete`  Contains both event.num and event.fac variables
-##--- Define `pom` object of Graph class
+
+
+
+##==== Define `pom` object of Graph class
 
 source("./src/create_pomGraph_object.R")
  
@@ -191,11 +206,15 @@ logx= c(logx, txt)
 
 CCH = if ("subcohort" %in% names(dcol_nms)) TRUE else FALSE
 
-# `task1`
+# Create `task1`
 if (CCH) source("./src/create_task1_cch.R") else source("./src/create_task1.R")
+
+
 txt =paste0("* --- mlr3:task1 created. CCH is ", CCH)
 cat(txt, "\n")
 logx= c(logx, txt)
+
+
 
 # `task1e`
 source("./src/create_task1e.R")
@@ -206,6 +225,25 @@ logx= c(logx, txt)
  cat("--- task1e created nevent levels: ", length(event_lvls),  "\n")
  feature_nms0 = names(task1e$data()) # using df_expanded_num
  feature_nms  = setdiff(feature_nms0, c(time_nm, evnt_num, evnt_fac)) # ,"fgstart", "fgstop", "fgstatus"))
+
+
+### ==== Create analysis summary
+anl_summ = tribble(
+ ~INFO, ~VALUE,
+ "Prj_name: ", prj_name,
+ "Time stamp: ", format(timeStamp0),
+ "Data subset:", if (is.na(Info$subset))  "Not applicable" else Info$subset,
+ "Time horizon:", as.character(Info$time_horizon),
+ "Design cols:",  paste0("`", dcol_txt, "`"),
+ "Partition ratio:", as.character(Info$partition_ratio),
+ "CCH:", as.character(CCH)
+)
+
+dfinfo = data.frame( INFO =paste0("tmvar_", names(t_vars)), VALUE= t_vars)
+rownames(dfinfo) = NULL
+anl_summary= bind_rows(anl_summ, dfinfo)
+
+
 
 #==== Process learners  ============
 cvglmnet_info = Info$cvglmnet_info

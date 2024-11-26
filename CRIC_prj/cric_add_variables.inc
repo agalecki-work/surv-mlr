@@ -110,6 +110,6 @@ df_complete = within(df_complete,{
    RACE_CAT_1 = factor(RACE_CAT_1)
    wght     = 1.2 # new  variable created
    log_OL1  = log(OL1)
-   train_idx = runif(n= nrow(df_complete)) > 0.8 
+   train_01 = runif(n= nrow(df_complete)) > 0.8 
 })
 

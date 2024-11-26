@@ -19,9 +19,10 @@ Info = list(
    feature_cols  = feature_test,
    d_cols        = c(id = "PID",            # named vector: id variable (mandatory) role "group" will be assigned
                      weight = "wght",     
-                     subcohort= "CHF"),     # 0/1 variable for case-cohort study
+                     subcohort= "CHF",      # 0/1 variable for case-cohort study
+                     external_01 = "train_01"),    
    add_cols      = c("log_OL1"),            # Additonal features used in the analysis
-   partition_ratio = 0.8,                   # training/test split
+   partition_ratio = NA, #0.8,                   # training/test split
    cvglmnet_info   = c(type = "surv.cv_glmnet", args = "glmnet_args"),
    alphas         = c(a.25 =0.25, a.50= 0.5, a.75= 0.75, a.1 =1), 
    pen_factor_modify = c(BMI = 0, CKD. = 0), # Note dot after CKD (expanded factor),
