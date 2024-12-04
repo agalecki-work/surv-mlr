@@ -8,7 +8,7 @@ logx = NULL
 
 # ===== Batch mode switch
 
-if (BATmode){ # Multiple t_vars will be processed in a batch mode
+if (BATmode){ # Multiple t_vars specified in args[2] will be processed in a batch mode
   args <- commandArgs(trailingOnly = TRUE)
   argsx = args[1]  # Ex: {%prj_name%:%anl_name%:%scriptBaseName%} CRIC_prj:test:27-cric-cv.coxnet
   t_varsid  = args[2]
@@ -75,6 +75,65 @@ logx = c(logx, txt)
 # print(var_labels)
 nms_df_complete = names(df_complete)
 
+#=======  Create `Info` list 
+fpath = paste0(prj_path,"/_Info/", anl_name, ".inc")
+source(fpath)
+
+#---- Extract info from `Info` list and create auxiliary vectors
+nm_id = Info$d_cols["id"]
+dcol_nms =names(Info$d_cols)
+dcol_nms =Info$d_cols[!dcol_nms == ""]
+mtx2 =cbind(names(Info$d_cols), Info$d_cols)
+tmp0 =apply(mtx2,1,FUN = function(x) paste(x, collapse=" = ")) # vector
+dcol_txt = paste(tmp0, collapse= "`, `")
+
+txt = paste0("* == Info$d_col variables: `", dcol_txt,"`")
+cat(txt, "\n")
+logx=c(logx, txt)
+
+
+#=======  Create `tvars_mtx` matrix 
+fpath = paste0(prj_path, "/cric_tvars_mtx.inc")
+source(fpath)
+
+txt = paste0("* Sourcing ", fpath, ". `cric_tvars_mtx` with ", nrow(tvars_mtx), " rows created")
+cat(txt, "\n")
+logx = c(logx, txt)
+
+# ====== Create `Info_tvars` auxiliary list with info on a selected `t_vars_id` 
+# Select one: t_varsid; Ex. "01", "02","31" 
+crhs = paste0("t_vars", t_varsid)
+t_vars = eval(parse(text= crhs)) # `t_vars` is named vector with elements: id, time, event.num (and event.fac?)
+
+Info_tvars = list(target_cols   = t_vars)
+   
+### ==== Create `analysis summary` tibble based on loaded Info objects
+
+ctmp_rat0 = if (!is.na(Info$partition_ratio)) as.character(Info$partition_ratio) else 
+   paste0 ("External validation: ", Info$d_cols["external_01"])
+
+ctmp_rat = if (is.null(Info$d_cols["external_01"])) "Not assigned" else ctmp_rat0
+
+CCH = if ("subcohort" %in% names(dcol_nms)) TRUE else FALSE
+
+anl_summ = tribble(
+ ~INFO, ~VALUE,
+ "Prj_name: ", prj_name,
+ "Time stamp: ", format(timeStamp0),
+ "Data subset:", if (is.na(Info$subset))  "Not applicable" else Info$subset,
+ "Time horizon:", as.character(Info$time_horizon),
+ "Design cols:",  paste0("`", dcol_txt, "`"),
+ "Partition ratio:",ctmp_rat,
+ "CCH:", as.character(CCH)
+)
+
+dfinfo = data.frame( INFO =paste0("tmvar_", names(t_vars)), VALUE= t_vars)
+rownames(dfinfo) = NULL
+anl_summary= bind_rows(anl_summ, dfinfo)
+txt = "* --- `analysis summmary` tibble created"
+cat(txt, "\n")
+logx= c(logx, txt)
+
 #=== Source script to add new (or modify existing) variables in `df_complete` (add as many vars as you wish) 
 nms_df_complete0 = names(df_complete)
 add_vars_inc = prj_Info$add_vars_name
@@ -92,47 +151,21 @@ txt = paste0("* == Var names added to `df_complete` are stored in `vars_added` v
 cat(txt, "\n")
 logx = c(logx, txt)
 
-
-#=======  Create `Info` list 
-fpath = paste0(prj_path,"/_Info/", anl_name, ".inc")
-source(fpath)
-
-
-#=======  Create `tvars_mtx` matrix 
-fpath = paste0(prj_path, "/cric_tvars_mtx.inc")
-source(fpath)
-
-txt = paste0("* Sourcing ", fpath, ". `cric_tvars_mtx` with ", nrow(tvars_mtx), " rows created")
-cat(txt, "\n")
-logx = c(logx, txt)
-
-
-# ====== Create `Info_tvars` auxiliry
-# Select one: t_varsid; Ex. "01", "02","31" 
-crhs = paste0("t_vars", t_varsid)
-t_vars = eval(parse(text= crhs)) # `t_vars` is named vector with elements: id, time, event.num (and event.fac?)
-
-
-Info_tvars = list(
-   target_cols   = t_vars
-   )
+# ==== Process `Info$dcols` vector
    
 # check `Info$dcols` vector
 names_dcols0 = names(Info$d_cols)
 names_dcols  = setdiff(names_dcols0, "")
-# cat("Info listcheck: Names of the elements in Info$d_cols vector (Note: id is mandatory) \n", names_dcols, "\n")
+tmp0 = paste(names_dcols, collapse ="`, `") 
+txt= paste0("* Info list: Names of the elements in Info$d_cols vector `", tmp0, "`")
+cat(txt, "\n")
+logx = c(logx, txt)
 
+# ==== Subsetting `df_complete`
 
-## fpath = paste0(prj_path,"/", anl_name, "/InfoList.inc")
-## source(fpath)
-cat("--- `Info` list on analysis in subfolder: ", anl_name, " created \n") 
-
-# rm(OLx, spline_vars,t1_vars, t2_vars, t3_vars,t4_vars, x_vars, fac_vars,feature_test, feature_vars)
 txt = paste0("* Subset `df_complete` (optional): ", Info$subset)
 cat(txt, "\n")
 logx=c(logx, txt)
-
-# ==== Subsetting `df_complete`
 
 txt= paste0("* `df_complete` before subset nrows =",  nrow(df_complete))
 cat(txt, "\n")
@@ -145,23 +178,12 @@ cat(txt, "\n")
 logx=c(logx, txt)
 
 
-#---  Extract info from `Info` list and create auxiliary vectors
-nm_id = Info$d_cols["id"]
-dcol_nms =names(Info$d_cols)
-dcol_nms =Info$d_cols[!dcol_nms == ""]
-
-mtx2 =cbind(names(Info$d_cols), Info$d_cols)
-tmp0 =apply(mtx2,1,FUN = function(x) paste(x, collapse=" = ")) # vector
-dcol_txt = paste(tmp0, collapse= "`, `")
-txt = paste0("* == Info$d_col variables: `", dcol_txt,"`")
-cat(txt, "\n")
-logx=c(logx, txt)
-
+# === `Info_tvars`
 time_nm  = Info_tvars$target_cols["time"]      # mandatory string
 evnt_num = Info_tvars$target_cols["event.num"] # mandatory string
 evnt_fac = Info_tvars$target_cols["event.fac"] # character string or NA
 tmp_id   = Info_tvars$target_cols["id"]
-txt = paste0("* -- time var id =",tmp_id , ". Time var name = `", time_nm, "` , status =`", evnt_num, "`" )
+txt = paste0("* == time var: id =", tmp_id , ". Time var name = `", time_nm, "` , status =`", evnt_num, "`" )
 cat(txt, "\n")
 logx=c(logx, txt)
 
@@ -177,11 +199,15 @@ if (!is.na(evnt_fac)){
 }
 
 
-#====  Keep selected columns in `df_complete`
-cat("--- Check `keep_vars`:")
-source("./src/02keep_selected_cols.R")
 
-#==== Admin censoring
+
+#====  Keep selected columns in `df_complete`
+source("./src/02keep_selected_cols.R")
+txt = paste0("* --- Selected columns in `df_complete`. Check `keep_vars`: with ", length(keep_vars), " elements.")
+cat(txt, "\n")
+logx=c(logx, txt)
+ 
+#==== Admin censoring at Info$time_horizon
 source("./R/apply_admin_censoring.R")
 max_obstime = max(df_complete[[time_nm]])
 txt= paste0("* Admin censoring at ", Info$time_horizon, " years (maximum observed time=", round(max_obstime, 2) , ")")
@@ -204,274 +230,38 @@ txt = paste0("* --- Event variable has ", length(event_lvls), " levels")
 cat(txt, "\n")
 logx= c(logx, txt)
 
-CCH = if ("subcohort" %in% names(dcol_nms)) TRUE else FALSE
-
-# Create `task1`
+#====  Create `task1`
 if (CCH) source("./src/create_task1_cch.R") else source("./src/create_task1.R")
-
-
-txt =paste0("* --- mlr3:task1 created. CCH is ", CCH)
+txt =paste0("* --- mlr3:task1 created. CCH is ", CCH, " rat=", rat)
 cat(txt, "\n")
 logx= c(logx, txt)
 
 
 
-# `task1e`
+# ==== Create `task1e` (expanded factors/splines
 source("./src/create_task1e.R")
-txt = "--- mlr3:task1e created"
+txt = "* --- mlr3:task1e created"
 cat(txt, "\n")
 logx= c(logx, txt)
 
- cat("--- task1e created nevent levels: ", length(event_lvls),  "\n")
  feature_nms0 = names(task1e$data()) # using df_expanded_num
- feature_nms  = setdiff(feature_nms0, c(time_nm, evnt_num, evnt_fac)) # ,"fgstart", "fgstop", "fgstatus"))
-
-
-### ==== Create analysis summary
-anl_summ = tribble(
- ~INFO, ~VALUE,
- "Prj_name: ", prj_name,
- "Time stamp: ", format(timeStamp0),
- "Data subset:", if (is.na(Info$subset))  "Not applicable" else Info$subset,
- "Time horizon:", as.character(Info$time_horizon),
- "Design cols:",  paste0("`", dcol_txt, "`"),
- "Partition ratio:", as.character(Info$partition_ratio),
- "CCH:", as.character(CCH)
-)
-
-dfinfo = data.frame( INFO =paste0("tmvar_", names(t_vars)), VALUE= t_vars)
-rownames(dfinfo) = NULL
-anl_summary= bind_rows(anl_summ, dfinfo)
+ feature_nms  = setdiff(feature_nms0, c(time_nm, evnt_num, evnt_fac)) # Time/event vars removed
 
 
 
 #==== Process learners  ============
+
+
 cvglmnet_info = Info$cvglmnet_info
 cvglmnet_args = get(cvglmnet_info["args"])
 
-#---- `surv.cv_glmnet` learner 
+#====  `surv.cv_glmnet` learner 
 if (Info$cvglmnet_info["type"] == "surv.cv_glmnet"){
-
- # Use `feature_nms` and `Info$pen_factor_modify` to create `pen.fac` vector
-     source("./src/create_penfactor.R") 
-     cat("--- Vector `pen.fac` with ", length(pen.fac), " elements created \n")
-     cat("--- `task1e` partitioned with ratio ", rat, " \n")
- 
- alphas_nms = names(Info$alphas)
- txt1 = paste(alphas_nms,collapse=", ")
- txt = paste0("* alpha names = ", txt1)
+ txt = "* -- Learner `surv.cv_glmnet` processed"
  cat(txt, "\n")
  logx= c(logx, txt)
- 
- 
- surv.cva_glmnet_learners= vector(mode="list", length = length(alphas_nms))
- names(surv.cva_glmnet_learners) = alphas_nms 
- 
- surv.cva_glmnet_prediction= vector(mode="list", length = length(alphas_nms))
- names(surv.cva_glmnet_prediction) = alphas_nms 
- 
- cva_glmnet_fits = vector(mode="list", length = length(alphas_nms))
- names(cva_glmnet_fits) = alphas_nms
- 
- if (length(event_lvls) == 2) pred1_scores = vector(mode="list", length = length(alphas_nms))
-
- cvglmnet_args_init = c(cvglmnet_args, list(penalty.factor = pen.fac, foldid=foldid)) 
- 
-#=== FOR ai ==============
- for (ai in seq_along(Info$alphas)){
- # Define learner
-    
-    ax= Info$alphas[ai]
-    learner_args_all = c(cvglmnet_args_init, list(alpha = ax))
-
-    anm = alphas_nms[ai]
-    # cat("--- Alpha =", ax, "processed \n") 
-    if (length(event_lvls) == 2){
-      learner = lrn("surv.cv_glmnet")
-      learner$param_set$values[names(learner_args_all)] <- learner_args_all
-      cat("--- Learner defined (type =`surv.cv_glmnet`, alpha=", ax, ") \n")
-     
- 
- # pass the task to the learner via $train()
- ### if (length(event_lvls) == 3) learner$train(task1e_FG, split$train) else learner$train(task1e, split$train) 
-    learner$train(task1e, split$train)
- 
-
- # Get predictions for your Fine-Gray task
- # prediction_FG = learner$predict(task1e_FG, row_ids = test_indices_fg)
-
- # score = prediction_FG$score(measure_fg_concordance)
- # print(score)
-  
-  
-    prediction = learner$predict(task1e, row_ids = split$test)   # prediction on test data 
-   #  cat("--- prediction on test data \n")
-
-   # inspect the trained model
-   # coef(learner$model$model)
- 
-   #--- predict_type = "distr"
-
-   prediction$distr[1:3]$survival(c(1, 3, 5, 7)) # prob surviving 5 years for the first 3 subjects in test data
-   # cat("--- prediction survival \n")
-
-
-#---- predict_type = "crank" stands for continuous ranking. 
-#-  In mlr3proba there is one consistent interpretation of crank: 
-# lower values represent a lower risk of the event taking place and higher values represent higher risk.
-prediction$crank[1:3]
-# cat("--- prediction crank \n")
-
-## ==== MeasureSurv
-
-as.data.table(mlr_measures)[
-  task_type == "surv", c("key", "predict_type")][1:5]
-  
-# surv.rcll  RCLL (right-censored logloss) to evaluate the quality of distr predictions
-# concordance index to evaluate a model’s discrimination,
-# D-Calibration to evaluate a model’s calibration 
-###--- if (length(event_lvls) == 2){
-   score_ai = prediction$score(msrs(c("surv.graf", "surv.rcll", "surv.cindex", "surv.dcalib")))
-} # if (length(event_lvls) == 2)
-
-# Save results for learner `surv.cv_glmnet`
-  tvarsx = Info_tvars$target_cols
-  tvarsx_id = tvarsx["id"]
-  tvarsx_tm = tvarsx["time"]
-  
-  tmp = learner_args_all$foldid 
-  if (length(tmp) > 0) foldidx = paste0(":vector with ", length(tmp), " elements") 
-  Info$foldid_cvglmnet = foldidx
-
-   if (length(event_lvls) == 2){
-      save_objects0 = c("surv.cva_glmnet_learners", "surv.cva_glmnet_prediction")
-      surv.cva_glmnet_learners[[ai]] = learner
-      surv.cva_glmnet_prediction[[ai]] = prediction
-      pred1_scores[[ai]] = score_ai
-      rm(learner, prediction)
-     } else {
-      cat("save3 \n")
-      #cvfit <- cv.glmnet(X_train, y_train, family = "multinomial", alpha = 0.5)  # Elastic net
-      train_data= as.data.table(task1e$filter(rows=split$train))
-      yt = t_vars["event.fac"]
-      y_train <- unlist(train_data[,yt, with=FALSE])
-  
-      xrm = c(t_vars["time"],t_vars["event.fac"])
-      X_train <- as.matrix(train_data[, (xrm) :=NULL])
-      learner_args_all$s =NULL
-      learner_args_allmult =c(learner_args_all, list(family = "multinomial", x=X_train, y =y_train))
-      cvfit = do.call("cv.glmnet", learner_args_allmult)
-      cva_glmnet_fits[[ai]] = cvfit
-      save_objects0 = c("cva_glmnet_fits")
-    }
-#--- Cleanup
-
-
-} # for (ai in seq_along(Info$alphas)
-#=== END FOR ai
-
-#--- Results for all alphas
-  if (length(event_lvls) == 2){    
-     cv_fits = lapply(alphas_nms,  FUN= function(a){
-      x=surv.cva_glmnet_learners[[a]]
-      x$model$model})
-      #--- pred_scoreAll
-      pred1_scoreList = lapply(pred1_scores, FUN = function(x) as_tibble(t(x)))
-      names(pred1_scoreList) = alphas_nms
-      pred_scoreAll = bind_rows( pred1_scoreList, .id = "alpha_lbl")
-      pred_scoreAll["learner_lbl"] = "surv.cv_glmnet"
-
-      
-    } else cv_fits = cva_glmnet_fits
-  
-  #--- glanceAll
-     glanceList =lapply(cv_fits, myglance)
-     names(glanceList) = alphas_nms
-     glanceAll =bind_rows(glanceList, .id = "alpha_lbl")
-     
-     glance_melt = glanceAll %>% select(alpha_lbl, index_min, index_1se) %>%
-       gather(index, step,  -alpha_lbl)
-       
-  #--- tidyAll
-     tidyList = lapply(cv_fits, mytidy)
-     names(tidyList) = alphas_nms
-     tidyAll0 = bind_rows(tidyList, .id = "alpha_lbl") 
-     
-     tidyAll = tidyAll0 %>% left_join(glance_melt, by= c("alpha_lbl","step"))  %>%
-               mutate( index = case_when(
-                 is.na(index) ~ "",
-                 .default = as.character(index)
-                 ))
-  
-  if (length(event_lvls) == 2){    
-  
-    #--- coefAll  Beta coefficients
-     coef_nms = rownames(coef(cv_fits[[1]]))
-     coefList = lapply(cv_fits, FUN= function(x){
-        vecx = as.matrix(coef(x))
-        dim(vecx) =NULL
-        vecx
-        })
-      coefAll = cbind(coef_nms, bind_cols(coefList))
-      names(coefAll) = c("coef", alphas_nms)
-    #  coef_alldot <- coefAll %>%  mutate(across(where(is.numeric), ~ round(.,4))) %>%
-    #  mutate(across(everything(), ~ ifelse(. == 0, ".", as.character(.))))
-  } else {
-  
-    multi_nms = names(coef(cv_fits[[1]])) #
-    
-    x1 = cv_fits[[1]]  # class(x1)= cv.glmnet
-    coefMtx1 = x1$glmnet$beta #list with three components
-    coefMtx =  coefMtx1[[2]] # 
-    coef_nms = rownames(coefMtx)
-    coefList = lapply(cv_fits, FUN= function(x){
-          cat("??? \n ")
-          print(class(x))
-          cat("???1 \n ")
-          xfit = x$glmnet.fit
-          cat("???2a \n ")
-          coef3 = xfit$beta # list with 3 components:  "censor" "ESRD"   "death"
-          cat("???3 \n ")
- 
-          ## coef_nms = rownames(coef3[[2]]) # vector
-          coefs1 = coef3[2]    # list with one component:ESRD, contains matrix with cols s0, s1... 
-          coefsMtx = coefs1[[1]]  # 19 x 80 sparse Matrix of class "dgCMatrix"
-          lambda_min = x$lambda.min
-          idx_min    = x$index["min","Lambda"]
-          coefs = coefsMtx[, idx_min]  # select column   
-          coefs
-          #vecx = as.matrix(coefs)
-          #dim(vecx) =NULL
-	  #vecx
-          })
-         coefAll = cbind(coef_nms, bind_cols(coefList))
-      names(coefAll) = c("coef", alphas_nms)
-  }
-      
-  save_objects = c("data1e","logx", "prj_Info", "Info", save_objects0)  
-  fpath0 = paste0(prj_path,"/", anl_name, "/", tvarsx_id , tvarsx_tm)
-  fpath = paste0(fpath0, "_cva_glmnet.Rdata") 
-  save(list =save_objects, file =fpath)
-  
-  txt0 = paste(save_objects, collapse=", ")
-  txt = paste0("* Objects: ", txt0, " saved in '", fpath) #_cva_glmnet.Rdata 
-  cat(txt, "\n") 
-  logx = c(logx, txt)
-  
-  #-- xlsx
-  ## fpath1 =paste0(prj_path,"/", anl_name, "/_prj_info.xlsx")
-  wb = createWorkbook()
-  addWorksheet(wb, "Info")
-  writeData(wb, "Info", anl_summary)  
-  addWorksheet(wb, "glanceAll")
-  writeData(wb, "glanceAll", glanceAll)
-  addWorksheet(wb, "tidyAll")
-  writeData(wb, "tidyAll", tidyAll)
-  addWorksheet(wb, "coefAll")
-  writeData(wb, "coefAll", coefAll)
-  fpathx =paste0(fpath0, "_cva_glmnet.xlsx")
+ source("./src/surv.cv_glmnet_src.R")
 } # Info$learner_type == "surv.cv_glmnet"
-
 
 
 # Other learners (competing risks not addressed)
@@ -503,7 +293,7 @@ if (length(event_lvls) == 2 && !is.null(Info$learners_info)){
    surv_prediction[[i]] = prediction
    pred2_scores[[i]] = score_i
    cat("--- ", lrn_type, "processed ... \n") 
- } #  for i
+ } #  for i in seq_along(learners_info))
  
 
      pred2_scoreList = lapply(pred2_scores, FUN = function(x) as_tibble(t(x)))
@@ -553,8 +343,15 @@ t_units =attr(tdelta, "units")
 
 if (BATmode){
  sink(fpathx, append=TRUE)
- cat("=== Script for `t_varsid=`", t_varsid, "Execution_time", tdelta, ", ", t_units, "\n")
+ txt= pasye0("* Sink file appended in batch mode: ", fpathx)
+ cat(txt, "\n")
+ logx = c(logx, txt)
+ 
+ txt = paste0("=== Script for `t_varsid=`", t_varsid, "Execution_time", tdelta, ", ", t_units, "\n")
+ cat(txt, "\n")
+ logx = c(logx, txt)
  sink()
+ 
  tmp1 = paste0(tvarsx_tm, "_cva_glmnet.Rdata")
  tmp2 = paste0(tvarsx_tm, "_varia.Rdata") 
  
@@ -565,7 +362,7 @@ if (BATmode){
  sink()
 
 
-}
+} # if (BATmode)
 
 # Plots
 # task_plot = task1$clone()

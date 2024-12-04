@@ -24,7 +24,7 @@ Info = list(
    add_cols      = c("log_OL1"),            # Additonal features used in the analysis
    partition_ratio = NA, #0.8,                   # training/test split
    cvglmnet_info   = c(type = "surv.cv_glmnet", args = "glmnet_args"),
-   alphas         = c(a.25 =0.25, a.50= 0.5, a.75= 0.75, a.1 =1), 
+   alphas         = c(a_25 =0.25, a_50= 0.5, a_75= 0.75, a_1 =1), 
    pen_factor_modify = c(BMI = 0, CKD. = 0), # Note dot after CKD (expanded factor),
    learners_info    = c(surv.ctree = "ctree_args", surv.cv_coxboost = "cv_coxboost_args"),
    splined_vars   = c("OL1"),
