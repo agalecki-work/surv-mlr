@@ -43,7 +43,7 @@
 
     anm = alphas_nms[ai]
 
-    txt = paste0("--- Alpha =", ax, " processed")
+    txt = paste0("* --- Alpha =", ax, " processed")
     cat(txt, "\n")
     logx= c(logx, txt)
 
@@ -202,7 +202,8 @@ as.data.table(mlr_measures)[
          names(coefAll) = c("coef", alphas_nms)
   }
       
-  save_objects = c("data1e", "anl_summary","logx", "prj_Info", "Info", save_objects0)  
+  save_objects = c("data1e", "anl_summary","logx", "prj_Info", "Info", save_objects0) 
+  
   fpath0 = paste0(prj_path,"/", anl_name, "/", tvarsx_id , tvarsx_tm)
   fpath = paste0(fpath0, "_cva_glmnet.Rdata") 
   save(list =save_objects, file =fpath)
@@ -215,8 +216,8 @@ as.data.table(mlr_measures)[
   #-- xlsx
   ## fpath1 =paste0(prj_path,"/", anl_name, "/_prj_info.xlsx")
   wb = createWorkbook()
-  addWorksheet(wb, "Info")
-  writeData(wb, "Info", anl_summary)  
+  addWorksheet(wb, "Anl_summ")
+  writeData(wb, "Anl_summ", anl_summary)  
   addWorksheet(wb, "glanceAll")
   writeData(wb, "glanceAll", glanceAll)
   addWorksheet(wb, "tidyAll")
@@ -224,4 +225,10 @@ as.data.table(mlr_measures)[
   addWorksheet(wb, "coefAll")
   writeData(wb, "coefAll", coefAll)
   ########## fpathx =paste0(fpath0, "_cva_glmnet.xlsx")
+  
+
+  txt = paste0("* Multiple WorkSheets added to Excel Workbook")
+  cat(txt, "\n") 
+  logx = c(logx, txt)
+
 # ~~~~~

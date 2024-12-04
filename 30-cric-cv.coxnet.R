@@ -93,7 +93,8 @@ logx=c(logx, txt)
 
 
 #=======  Create `tvars_mtx` matrix 
-fpath = paste0(prj_path, "/cric_tvars_mtx.inc")
+ctmp = prj_Info$tvars_mtx_name
+fpath = paste0(prj_path, "/", ctmp)
 source(fpath)
 
 txt = paste0("* Sourcing ", fpath, ". `cric_tvars_mtx` with ", nrow(tvars_mtx), " rows created")
