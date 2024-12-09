@@ -10,8 +10,6 @@ feature_test = c(x_vars, fac_vars, "OL1", "OL2")
 
 nfolds = 5
 glmnet_args         = list( s="lambda.min", nfolds = nfolds) # alpha argument will be added inside loop
-ctree_args          = list()
-cv_coxboost_args    = list()
 
 Info = list(
    subset        = "CKD == 'CKD3b'",
@@ -26,7 +24,6 @@ Info = list(
    cvglmnet_info   = c(type = "surv.cv_glmnet", args = "glmnet_args"),
    alphas         = c(a_25 =0.25, a_50= 0.5, a_75= 0.75, a_1 =1), 
    pen_factor_modify = c(BMI = 0, CKD. = 0), # Note dot after CKD (expanded factor),
-   learners_info    = c(surv.ctree = "ctree_args", surv.cv_coxboost = "cv_coxboost_args"),
    splined_vars   = c("OL1"),
    seed           = c(foldid = 1324, split = 7943) 
 )

@@ -37,6 +37,11 @@ if (BATmode){ # Multiple t_vars specified in args[2] will be processed in a batc
   txt=paste0("* == Project name: ", prj_name)
   cat( txt, "\n")
   logx = c(logx,txt)
+  
+  txt=paste0("* == Analysis name: ", anl_name)
+  cat( txt, "\n")
+  logx = c(logx,txt)
+
 
 # ====== Load libraries
 pkgs <- c("mlr3", "mlr3proba", "mlr3learners", "mlr3extralearners", "glmnet", "mlr3pipelines","dplyr", 
@@ -74,6 +79,11 @@ logx = c(logx, txt)
 # print(Info_df_complete)
 # print(var_labels)
 nms_df_complete = names(df_complete)
+
+#=======  Create `prj_learners` named vector 
+fpath = paste0(prj_path,"/prj_learners.inc")
+source(fpath)
+
 
 #=======  Create `Info` list 
 fpath = paste0(prj_path,"/_Info/", anl_name, ".inc")
@@ -162,7 +172,7 @@ txt= paste0("* Info list: Names of the elements in Info$d_cols vector `", tmp0, 
 cat(txt, "\n")
 logx = c(logx, txt)
 
-# ==== Subsetting `df_complete`
+# ==== Subsetting (selecting rows in) `df_complete`
 
 txt = paste0("* Subset `df_complete` (optional): ", Info$subset)
 cat(txt, "\n")
@@ -198,8 +208,6 @@ if (!is.na(evnt_fac)){
  event_table = table( df_complete[[evnt_num]]) # numeric event
  cat("--- Table for event variable: `", evnt_num, "` \n" , event_table, "\n" )
 }
-
-
 
 
 #====  Keep selected columns in `df_complete`
@@ -258,68 +266,38 @@ cvglmnet_args = get(cvglmnet_info["args"])
 
 #====  `surv.cv_glmnet` learner 
 if (Info$cvglmnet_info["type"] == "surv.cv_glmnet"){
- txt = "* -- Learner `surv.cv_glmnet` processed"
+ txt = "* ===> Learner `surv.cv_glmnet` processed: STARTS"
  cat(txt, "\n")
  logx= c(logx, txt)
  source("./src/surv.cv_glmnet_src.R")
+ txt = "* -- Learner `surv.cv_glmnet` processed: ENDS"
+ cat(txt, "\n")
+ logx= c(logx, txt)
+
 } # Info$learner_type == "surv.cv_glmnet"
 
 
 # Other learners (competing risks not addressed)
-if (length(event_lvls) == 2 && !is.null(Info$learners_info)){
- learners_info = Info$learners_info # c(surv.ctree = "ctree_args",  surv.cv_coxboost = "cv_coxboost_args")
+
+if (length(event_lvls) == 2 && exists("prj_learners_info")){
+ learners_info = prj_learners_info # Ex:  c(surv.ctree = "ctree_args",  surv.cv_coxboost = "cv_coxboost_args")
  learner_nms = names(learners_info)
+ txt = "* ===> ... Learners processed: STARTS"
+ cat(txt, "\n")
+ logx= c(logx, txt)
 
- surv_learners= vector(mode="list", length = length(learner_nms))
- names(surv_learners) = learner_nms 
+ fpath = "./src/surv_learners2.R"
+ source(fpath)
  
- surv_prediction= vector(mode="list", length = length(learner_nms))
- names(surv_prediction) = learner_nms
- 
- pred2_scores = vector(mode="list", length = length(learner_nms))
- names(pred2_scores) = learner_nms
+ txt = "* ---> ... Learners processed: ENDS"
+ cat(txt, "\n")
+ logx= c(logx, txt)
 
-
- for (i in seq_along(learners_info)){
-   lrn_type = learner_nms[i] # Ex. "surv.ctree"
-   lrn_name = sub("surv.", "",  lrn_type) # "ctree"
-   learner = lrn(lrn_type)
-   learner_args = get(learners_info[i])
-   learner$param_set$values[names(learner_args)] <- learner_args
-   learner$train(task1e, split$train)
-   prediction = learner$predict(task1e, row_ids = split$test)
-   score_i    = prediction$score(msrs(c("surv.graf", "surv.rcll", "surv.cindex", "surv.dcalib")))
-   save_objects0 = c("surv_learners", "surv_prediction")
-   surv_learners[[i]] = learner
-   surv_prediction[[i]] = prediction
-   pred2_scores[[i]] = score_i
-   cat("--- ", lrn_type, "processed ... \n") 
- } #  for i in seq_along(learners_info))
- 
-
-     pred2_scoreList = lapply(pred2_scores, FUN = function(x) as_tibble(t(x)))
-     names(pred2_scoreList) = learner_nms
-     pred2_scoreAll = bind_rows( pred2_scoreList, .id = "learner_lbl")
-     pred2_scoreAll["alpha_lbl"] = ""
-     pred_scoreAll = rbind(pred_scoreAll, pred2_scoreAll) 
-    
-    save_objects = c("prj_Info", "Info","logx",save_objects0)
-     fpath = paste0(prj_path,"/", anl_name, "/", tvarsx_id , tvarsx_tm,  "_varia.Rdata")
-     save(list =save_objects, file =fpath)
- 
-     txt0 = paste(save_objects, collapse=", ")
-     txt  = paste0(": Objects: `", txt0, "` saved_in `", fpath, "`")
-     cat(txt, "\n")
-     logx = c(logx, txt)
- 
-     pred_scoreAll =  pred_scoreAll %>% relocate(learner_lbl, .before = alpha_lbl)
-     addWorksheet(wb, "pred_scoreAll")
-     writeData(wb, "pred_scoreAll", pred_scoreAll)
 
 } # if length(event_lvls) == 2
 
 
-  
+# excel *_summary.xlsx file created
    
    fpath0 = paste0(prj_path,"/", anl_name, "/", tvarsx_id , tvarsx_tm)
    fpathx =paste0(fpath0, "_summary.xlsx")
@@ -327,7 +305,7 @@ if (length(event_lvls) == 2 && !is.null(Info$learners_info)){
    
    sheet_nms =getSheetNames(fpathx)
    txt0 = paste(sheet_nms, collapse = ", ")
-   txt  = paste0("* Sheet_names: ", txt0, " in ", fpathx)
+   txt  = paste0("* `summary.xlsx` created. Sheet_names: ", txt0, " saved in ", fpathx)
    cat(txt, "\n")
    logx= c(logx, txt)
    
@@ -338,17 +316,11 @@ print(as.POSIXlt(timeStamp1))
 
 fpathx = paste0("./", scriptBaseName, "x.log")  
 fpath_map = paste0("./",prj_name, "/", anl_name, "/_map.log")
-tdelta = timeStamp1 - timeStamp0
-t_units =attr(tdelta, "units")
 
 
 if (BATmode){
  sink(fpathx, append=TRUE)
- txt= pasye0("* Sink file appended in batch mode: ", fpathx)
- cat(txt, "\n")
- logx = c(logx, txt)
- 
- txt = paste0("=== Script for `t_varsid=`", t_varsid, "Execution_time", tdelta, ", ", t_units, "\n")
+ txt= paste0("* Sink file appended in batch mode: ", fpathx)
  cat(txt, "\n")
  logx = c(logx, txt)
  sink()
@@ -356,14 +328,28 @@ if (BATmode){
  tmp1 = paste0(tvarsx_tm, "_cva_glmnet.Rdata")
  tmp2 = paste0(tvarsx_tm, "_varia.Rdata") 
  
- # `_map.log` xreated in analysis folder
+ # `_map.log` created in analysis folder
  sink(fpath_map)
   cat(t_varsid, ",", tmp1,  "\n")
   cat(t_varsid, ",", tmp2,  "\n")
  sink()
 
+} else {  
+ ### ??
 
-} # if (BATmode)
+} # ifelse (BATmode)
+
+ tdelta = timeStamp1 - timeStamp0
+ t_units =attr(tdelta, "units")
+
+ txt = paste0("* ===>>> BATmode =", BATmode,". Script for t_varsid=`", t_varsid, "` COMPLETED")
+ cat(txt, "\n")
+ logx = c(logx, txt)
+
+ txt = paste0("*  Execution_time: ", round(tdelta,2), " ", t_units)
+ cat(txt, "\n")
+ logx = c(logx, txt)
+
 
 # Plots
 # task_plot = task1$clone()
