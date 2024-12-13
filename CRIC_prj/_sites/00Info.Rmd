@@ -143,7 +143,7 @@ tvars_selx
 ```
 
 ```{r Info-list, results='markup'}
-anl_Path = paste0(prj_Path,"/_Info/",anl_name)
+anl_Path = paste0(prj_Path,"/Analysis_Info/",anl_name)
 fpath = paste0(anl_Path,".inc")
 source(fpath)
 Info

@@ -10,18 +10,17 @@ This is the home page of website for the CRIC project.
 
 # Files/Folders
 
-```{r Rscriptnms, echo=FALSE, results='asis'}
+
+```{r Rscript, echo=FALSE, results='asis'}
 dir0 = ".."              #_sites
 dirx = dirname(dir0)    # CRIC_prj parent directory
-dirx_link = paste0("[Links](", dir0,") to files \n")
+dirx_link = paste0("[Links](", dir0,") to all files \n")
 cat(paste(dirx_link, collapse = "\n"))
-
 ```
 
+# R session info
 
-# R session info {-}
-
-```{r session info, comment=""}
+```{r session_info, comment=""}
 getwd()
 xfun::session_info()
 ```

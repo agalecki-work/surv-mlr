@@ -1,9 +1,10 @@
 ### source("02-cric-df_complete.R")
 
-#==== Missing values imputation 
+#==== Script to perform missing values imputation 
 # Info list: `Info_df_complete` defined inside this script
 
 #---- Input: load(data_in["fpath"], verbose=TRUE)
+
 #---- Output: save(file = save_path, list = keep_objects)
 
 rm(list=ls())
@@ -11,7 +12,7 @@ prj_path = "."
 # Load libraries
 # packages <- c("mlr3", "mlr3proba", "mlr3learners", "mlr3extralearners", "glmnet", "mlr3pipelines",
 pkgs = c("dplyr", "data.table", "Hmisc", "mice") # sas7bdat
-lapply(pkgs, require, quietly =TRUE, character.only = TRUE)
+tt = lapply(pkgs, require, quietly =TRUE, character.only = TRUE)
 
 #=======  Project info
 

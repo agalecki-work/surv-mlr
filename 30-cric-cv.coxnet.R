@@ -33,7 +33,6 @@ if (BATmode){ # Multiple t_vars specified in args[2] will be processed in a batc
   logx = c(logx,txt)
   print(as.POSIXlt(timeStamp0))
 
-
   txt=paste0("* == Project name: ", prj_name)
   cat( txt, "\n")
   logx = c(logx,txt)
@@ -41,6 +40,15 @@ if (BATmode){ # Multiple t_vars specified in args[2] will be processed in a batc
   txt=paste0("* == Analysis name: ", anl_name)
   cat( txt, "\n")
   logx = c(logx,txt)
+  
+# === RmdInfo
+  Rmd_relpath = "../../"
+  txt = "* ===== INPUT INFO"
+  cat( txt, "\n")
+  logx = c(logx,txt)
+  txt = paste0("* [Project_info](", Rmd_relpath,   "prj_Info.inc)")
+  
+  
 
 
 # ====== Load libraries
@@ -86,7 +94,7 @@ source(fpath)
 
 
 #=======  Create `Info` list 
-fpath = paste0(prj_path,"/_Info/", anl_name, ".inc")
+fpath = paste0(prj_path,"/Analysis_Info/", anl_name, ".inc")
 source(fpath)
 
 #---- Extract info from `Info` list and create auxiliary vectors

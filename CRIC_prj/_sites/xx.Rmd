@@ -21,7 +21,9 @@ source(fpath)
 
 # src Info
 
-fpath = paste0(anl_Path,"/_Infoxvars.inc")
+# fpath = paste0(anl_Path,"/_Infoxvars.inc")
+fpath = paste0(prj_Path,"/Analysis_Info/", anl_name, ".inc")
+
 source(fpath)
 #tvar_name = Info$target_cols["time"]
 selct = tvars_mtx[tvars_mtx[, "id"] == t_varsid, ]
@@ -48,22 +50,12 @@ cat(t_varsid, ":", tvar_name, event_num, event_fac)
 
 ## `r anl_name` info
 
-
 * glmnet_args
 
 ```{r glmnet_args, results='markup'}
 glmnet_args
 ```
-* ctree_args
 
-```{r ctree_args, results='markup'}
-ctree_args
-```
-* cv_coxboost_args
-
-```{r cv_coxboost_args, results='markup'}
-cv_coxboost_args
-```
 * Info
 
 ```{r Info, results='markup'}
@@ -143,7 +135,9 @@ Beta coefficients for diffrent values of alpha hyperparameter:
 ## CV-Plot
 
 ```{r cv.fit-lasso, include=ResOption1, fig.cap = "Fig: Cross-validation plot"}
-cva1_learner= surv.cva_glmnet_learners[["a.1"]]
+nms = names(surv.cva_glmnet_learners)
+nm_last = nms[length(nms)]
+cva1_learner= surv.cva_glmnet_learners[[nm_last]]
 cva1_fit =cva1_learner$model$model
 plot(cva1_fit)
 ```
