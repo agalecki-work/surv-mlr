@@ -6,7 +6,7 @@
 
 prj_name       = "CRIC_prj"
 scriptBaseName = "30-cric-cv.coxnet"
-anl_name       = "lin1"  # test, lin1
+anl_name       = "test"  # test, lin1
 
 tvar_ids =  "01 02 03 10 31 32"  # Time var ids selected
 

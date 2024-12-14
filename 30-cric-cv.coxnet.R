@@ -2,7 +2,7 @@
 
 rm(list=ls())
 
-BATmode = FALSE # TRUE # !!!
+BATmode = TRUE # TRUE # !!!
 
 logx = NULL
 
@@ -10,7 +10,7 @@ logx = NULL
 
 if (BATmode){ # Multiple t_vars specified in args[2] will be processed in a batch mode
   args <- commandArgs(trailingOnly = TRUE)
-  argsx = args[1]  # Ex: {%prj_name%:%anl_name%:%scriptBaseName%} CRIC_prj:test:27-cric-cv.coxnet
+  argsx = args[1]  # Ex: {%prj_name%:%anl_name%:%scriptBaseName%} CRIC_prj:test:30-cric-cv.coxnet
   t_varsid  = args[2]
   txt = paste0("* ====== Script executed in batch mode for tvar=", t_varsid)
 } else {
@@ -325,6 +325,8 @@ print(as.POSIXlt(timeStamp1))
 fpathx = paste0("./", scriptBaseName, "x.log")  
 fpath_map = paste0("./",prj_name, "/", anl_name, "/_map.log")
 
+ tdelta = timeStamp1 - timeStamp0
+ t_units =attr(tdelta, "units")
 
 if (BATmode){
  sink(fpathx, append=TRUE)
@@ -338,8 +340,8 @@ if (BATmode){
  
  # `_map.log` created in analysis folder
  sink(fpath_map)
-  cat(t_varsid, ",", tmp1,  "\n")
-  cat(t_varsid, ",", tmp2,  "\n")
+ txt = paste0(" BATmode =", BATmode, ". Analysis:  ", anl_name , ". COMPLETED at ",as.character(as.POSIXlt(timeStamp1)))
+ cat(txt, "\n")
  sink()
 
 } else {  
@@ -347,8 +349,6 @@ if (BATmode){
 
 } # ifelse (BATmode)
 
- tdelta = timeStamp1 - timeStamp0
- t_units =attr(tdelta, "units")
 
  txt = paste0("* ===>>> BATmode =", BATmode,". Script for t_varsid=`", t_varsid, "` COMPLETED")
  cat(txt, "\n")

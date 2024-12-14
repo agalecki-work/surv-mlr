@@ -145,3 +145,39 @@
 --- Running iteration 32 started on Tue 11/19/2024 22:59:03.88 
 === Script for `t_varsid=` 32 Execution_time 4.518292 ,  secs 
 ===== 30-cric-cv.coxnet.R execution ended on Tue 11/19/2024 at 22:59:08.92 
+===== 30-cric-cv.coxnet.R execution started on Fri 12/13/2024 at 16:13:56.25 
+--- Running iteration 01 started on Fri 12/13/2024 16:13:56.27 
+--- Running iteration 02 started on Fri 12/13/2024 16:13:59.42 
+--- Running iteration 03 started on Fri 12/13/2024 16:14:02.30 
+--- Running iteration 10 started on Fri 12/13/2024 16:14:05.16 
+--- Running iteration 31 started on Fri 12/13/2024 16:14:07.98 
+--- Running iteration 32 started on Fri 12/13/2024 16:14:10.89 
+===== 30-cric-cv.coxnet.R execution ended on Fri 12/13/2024 at 16:14:13.72 
+===== 30-cric-cv.coxnet.R execution started on Fri 12/13/2024 at 16:24:02.70 
+--- Running iteration 01 started on Fri 12/13/2024 16:24:02.71 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 02 started on Fri 12/13/2024 16:24:11.72 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 03 started on Fri 12/13/2024 16:24:20.38 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 10 started on Fri 12/13/2024 16:24:28.97 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 31 started on Fri 12/13/2024 16:24:37.56 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 32 started on Fri 12/13/2024 16:24:42.42 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+===== 30-cric-cv.coxnet.R execution ended on Fri 12/13/2024 at 16:24:47.45 
+===== 30-cric-cv.coxnet.R execution started on Fri 12/13/2024 at 19:48:28.64 
+--- Running iteration 01 started on Fri 12/13/2024 19:48:28.66 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 02 started on Fri 12/13/2024 19:48:37.58 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 03 started on Fri 12/13/2024 19:48:46.40 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 10 started on Fri 12/13/2024 19:48:55.08 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 31 started on Fri 12/13/2024 19:49:03.83 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+--- Running iteration 32 started on Fri 12/13/2024 19:49:08.26 
+* Sink file appended in batch mode: ./30-cric-cv.coxnetx.log 
+===== 30-cric-cv.coxnet.R execution ended on Fri 12/13/2024 at 19:49:12.76 

@@ -1,13 +1,15 @@
 ============ 30-cric-cv.coxnet.R executed 
 Running script from the current directory: C:\Users\agalecki\Documents\GitHub\surv-mlr 
---- Running iteration 01 started on Tue 11/19/2024 22:09:53.67 
+--- Running iteration 01 started on Fri 12/13/2024 16:13:56.27 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 01'
 
 * ====== Script executed in batch mode for tvar=01 
-* Time stamp: 2024-11-19 22:09:54.108408 
-[1] "2024-11-19 22:09:54 EST"
-* Project name: CRIC_prj 
+* Time stamp: 2024-12-13 16:13:56.696682 
+[1] "2024-12-13 16:13:56 EST"
+* == Project name: CRIC_prj 
+* == Analysis name: lin1 
+* ===== INPUT INFO 
 Loaded glmnet 4.1-8
 
 Attaching package: 'dplyr'
@@ -36,53 +38,24 @@ The following objects are masked from 'package:Matrix':
     expand, pack, unpack
 
 --- Packages loaded 
-[1] "original_nms"  "complete_nms"  "add_vars_name"
-* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Sourcing `./CRIC_prj/prj_Info.inc. `prj_Info` list with `original_nms`, `complete_nms`, `add_vars_name`, `tvars_mtx_name`, `prj_learners` components created. 
 * Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
-* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
---- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* == Info$d_col variables: `id = PID` 
 * Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
---- Info list on analysis in subfolder:  lin1  created 
-* Subset `df_complete` (optional):  
-* `df_complete` before subset nrows =1170 
-* `df_complete` after subset nrows =1170 
-Info$d_col variables:  PID 
--- Time var nms =  TIME_ESRD , status = ESRD , id = 01 
---- Table for event variable: ` ESRD ` 
- 804 366 
---- Check `keep_vars`:  ... OK 
-* Admin censoring at 10 years (maximum observed time=16.62) 
-* --- Event variable has 2 levels 
-* --- mlr3:task1 created. CCH is FALSE 
---- task1e created 
---- task1e created nevent levels:  2 
---- Vector `pen.fac` with  38  elements created 
---- `task1e` partitioned with ratio  0.8  
-* alpha names = a.25, a.50, a.75, a.1 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.25 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.5 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.75 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 1 ) 
-New names:
-• `` -> `...1`
-• `` -> `...2`
-• `` -> `...3`
-• `` -> `...4`
-* Objects: data1e, logx, prj_Info, Info, surv.cva_glmnet_learners, surv.cva_glmnet_prediction saved in './CRIC_prj/lin1/01TIME_ESRD_cva_glmnet.Rdata 
----  surv.ctree processed ... 
----  surv.cv_coxboost processed ... 
-: Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/lin1/01TIME_ESRD_varia.Rdata` 
-* Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/lin1/01TIME_ESRD_summary.xlsx 
-Time stamp. t_varsid:  01  
-[1] "2024-11-19 22:10:50 EST"
---- Running iteration 02 started on Tue 11/19/2024 22:10:50.53 
+Error in if (is.na(Info$subset)) "Not applicable" else Info$subset : 
+  argument is of length zero
+Calls: tribble -> extract_frame_data_from_dots -> list2
+Execution halted
+--- Running iteration 02 started on Fri 12/13/2024 16:13:59.42 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 02'
 
 * ====== Script executed in batch mode for tvar=02 
-* Time stamp: 2024-11-19 22:10:50.896697 
-[1] "2024-11-19 22:10:50 EST"
-* Project name: CRIC_prj 
+* Time stamp: 2024-12-13 16:13:59.683628 
+[1] "2024-12-13 16:13:59 EST"
+* == Project name: CRIC_prj 
+* == Analysis name: lin1 
+* ===== INPUT INFO 
 Loaded glmnet 4.1-8
 
 Attaching package: 'dplyr'
@@ -111,53 +84,24 @@ The following objects are masked from 'package:Matrix':
     expand, pack, unpack
 
 --- Packages loaded 
-[1] "original_nms"  "complete_nms"  "add_vars_name"
-* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Sourcing `./CRIC_prj/prj_Info.inc. `prj_Info` list with `original_nms`, `complete_nms`, `add_vars_name`, `tvars_mtx_name`, `prj_learners` components created. 
 * Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
-* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
---- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* == Info$d_col variables: `id = PID` 
 * Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
---- Info list on analysis in subfolder:  lin1  created 
-* Subset `df_complete` (optional):  
-* `df_complete` before subset nrows =1170 
-* `df_complete` after subset nrows =1170 
-Info$d_col variables:  PID 
--- Time var nms =  TIME_LOSS50 , status = LOSS50 , id = 02 
---- Table for event variable: ` LOSS50 ` 
- 710 460 
---- Check `keep_vars`:  ... OK 
-* Admin censoring at 10 years (maximum observed time=16.62) 
-* --- Event variable has 2 levels 
-* --- mlr3:task1 created. CCH is FALSE 
---- task1e created 
---- task1e created nevent levels:  2 
---- Vector `pen.fac` with  38  elements created 
---- `task1e` partitioned with ratio  0.8  
-* alpha names = a.25, a.50, a.75, a.1 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.25 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.5 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.75 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 1 ) 
-New names:
-• `` -> `...1`
-• `` -> `...2`
-• `` -> `...3`
-• `` -> `...4`
-* Objects: data1e, logx, prj_Info, Info, surv.cva_glmnet_learners, surv.cva_glmnet_prediction saved in './CRIC_prj/lin1/02TIME_LOSS50_cva_glmnet.Rdata 
----  surv.ctree processed ... 
----  surv.cv_coxboost processed ... 
-: Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/lin1/02TIME_LOSS50_varia.Rdata` 
-* Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/lin1/02TIME_LOSS50_summary.xlsx 
-Time stamp. t_varsid:  02  
-[1] "2024-11-19 22:12:01 EST"
---- Running iteration 03 started on Tue 11/19/2024 22:12:02.08 
+Error in if (is.na(Info$subset)) "Not applicable" else Info$subset : 
+  argument is of length zero
+Calls: tribble -> extract_frame_data_from_dots -> list2
+Execution halted
+--- Running iteration 03 started on Fri 12/13/2024 16:14:02.30 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 03'
 
 * ====== Script executed in batch mode for tvar=03 
-* Time stamp: 2024-11-19 22:12:02.339519 
-[1] "2024-11-19 22:12:02 EST"
-* Project name: CRIC_prj 
+* Time stamp: 2024-12-13 16:14:02.560623 
+[1] "2024-12-13 16:14:02 EST"
+* == Project name: CRIC_prj 
+* == Analysis name: lin1 
+* ===== INPUT INFO 
 Loaded glmnet 4.1-8
 
 Attaching package: 'dplyr'
@@ -186,53 +130,24 @@ The following objects are masked from 'package:Matrix':
     expand, pack, unpack
 
 --- Packages loaded 
-[1] "original_nms"  "complete_nms"  "add_vars_name"
-* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Sourcing `./CRIC_prj/prj_Info.inc. `prj_Info` list with `original_nms`, `complete_nms`, `add_vars_name`, `tvars_mtx_name`, `prj_learners` components created. 
 * Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
-* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
---- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* == Info$d_col variables: `id = PID` 
 * Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
---- Info list on analysis in subfolder:  lin1  created 
-* Subset `df_complete` (optional):  
-* `df_complete` before subset nrows =1170 
-* `df_complete` after subset nrows =1170 
-Info$d_col variables:  PID 
--- Time var nms =  TIME_LOSS50_ESRD , status = LOSS50_ESRD , id = 03 
---- Table for event variable: ` LOSS50_ESRD ` 
- 709 461 
---- Check `keep_vars`:  ... OK 
-* Admin censoring at 10 years (maximum observed time=16.62) 
-* --- Event variable has 2 levels 
-* --- mlr3:task1 created. CCH is FALSE 
---- task1e created 
---- task1e created nevent levels:  2 
---- Vector `pen.fac` with  38  elements created 
---- `task1e` partitioned with ratio  0.8  
-* alpha names = a.25, a.50, a.75, a.1 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.25 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.5 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.75 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 1 ) 
-New names:
-• `` -> `...1`
-• `` -> `...2`
-• `` -> `...3`
-• `` -> `...4`
-* Objects: data1e, logx, prj_Info, Info, surv.cva_glmnet_learners, surv.cva_glmnet_prediction saved in './CRIC_prj/lin1/03TIME_LOSS50_ESRD_cva_glmnet.Rdata 
----  surv.ctree processed ... 
----  surv.cv_coxboost processed ... 
-: Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/lin1/03TIME_LOSS50_ESRD_varia.Rdata` 
-* Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/lin1/03TIME_LOSS50_ESRD_summary.xlsx 
-Time stamp. t_varsid:  03  
-[1] "2024-11-19 22:13:14 EST"
---- Running iteration 10 started on Tue 11/19/2024 22:13:15.18 
+Error in if (is.na(Info$subset)) "Not applicable" else Info$subset : 
+  argument is of length zero
+Calls: tribble -> extract_frame_data_from_dots -> list2
+Execution halted
+--- Running iteration 10 started on Fri 12/13/2024 16:14:05.16 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 10'
 
 * ====== Script executed in batch mode for tvar=10 
-* Time stamp: 2024-11-19 22:13:15.507609 
-[1] "2024-11-19 22:13:15 EST"
-* Project name: CRIC_prj 
+* Time stamp: 2024-12-13 16:14:05.405768 
+[1] "2024-12-13 16:14:05 EST"
+* == Project name: CRIC_prj 
+* == Analysis name: lin1 
+* ===== INPUT INFO 
 Loaded glmnet 4.1-8
 
 Attaching package: 'dplyr'
@@ -261,53 +176,24 @@ The following objects are masked from 'package:Matrix':
     expand, pack, unpack
 
 --- Packages loaded 
-[1] "original_nms"  "complete_nms"  "add_vars_name"
-* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Sourcing `./CRIC_prj/prj_Info.inc. `prj_Info` list with `original_nms`, `complete_nms`, `add_vars_name`, `tvars_mtx_name`, `prj_learners` components created. 
 * Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
-* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
---- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* == Info$d_col variables: `id = PID` 
 * Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
---- Info list on analysis in subfolder:  lin1  created 
-* Subset `df_complete` (optional):  
-* `df_complete` before subset nrows =1170 
-* `df_complete` after subset nrows =1170 
-Info$d_col variables:  PID 
--- Time var nms =  TIME_DEATH , status = DEAD , id = 10 
---- Table for event variable: ` DEAD ` 
- 625 545 
---- Check `keep_vars`:  ... OK 
-* Admin censoring at 10 years (maximum observed time=16.88) 
-* --- Event variable has 2 levels 
-* --- mlr3:task1 created. CCH is FALSE 
---- task1e created 
---- task1e created nevent levels:  2 
---- Vector `pen.fac` with  38  elements created 
---- `task1e` partitioned with ratio  0.8  
-* alpha names = a.25, a.50, a.75, a.1 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.25 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.5 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 0.75 ) 
---- Learner defined (type =`surv.cv_glmnet`, alpha= 1 ) 
-New names:
-• `` -> `...1`
-• `` -> `...2`
-• `` -> `...3`
-• `` -> `...4`
-* Objects: data1e, logx, prj_Info, Info, surv.cva_glmnet_learners, surv.cva_glmnet_prediction saved in './CRIC_prj/lin1/10TIME_DEATH_cva_glmnet.Rdata 
----  surv.ctree processed ... 
----  surv.cv_coxboost processed ... 
-: Objects: `prj_Info, Info, logx, surv_learners, surv_prediction` saved_in `./CRIC_prj/lin1/10TIME_DEATH_varia.Rdata` 
-* Sheet_names: Info, glanceAll, tidyAll, coefAll, pred_scoreAll in ./CRIC_prj/lin1/10TIME_DEATH_summary.xlsx 
-Time stamp. t_varsid:  10  
-[1] "2024-11-19 22:14:22 EST"
---- Running iteration 31 started on Tue 11/19/2024 22:14:22.57 
+Error in if (is.na(Info$subset)) "Not applicable" else Info$subset : 
+  argument is of length zero
+Calls: tribble -> extract_frame_data_from_dots -> list2
+Execution halted
+--- Running iteration 31 started on Fri 12/13/2024 16:14:07.98 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 31'
 
 * ====== Script executed in batch mode for tvar=31 
-* Time stamp: 2024-11-19 22:14:22.908039 
-[1] "2024-11-19 22:14:22 EST"
-* Project name: CRIC_prj 
+* Time stamp: 2024-12-13 16:14:08.230882 
+[1] "2024-12-13 16:14:08 EST"
+* == Project name: CRIC_prj 
+* == Analysis name: lin1 
+* ===== INPUT INFO 
 Loaded glmnet 4.1-8
 
 Attaching package: 'dplyr'
@@ -336,66 +222,24 @@ The following objects are masked from 'package:Matrix':
     expand, pack, unpack
 
 --- Packages loaded 
-[1] "original_nms"  "complete_nms"  "add_vars_name"
-* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Sourcing `./CRIC_prj/prj_Info.inc. `prj_Info` list with `original_nms`, `complete_nms`, `add_vars_name`, `tvars_mtx_name`, `prj_learners` components created. 
 * Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
-* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
---- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* == Info$d_col variables: `id = PID` 
 * Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
---- Info list on analysis in subfolder:  lin1  created 
-* Subset `df_complete` (optional):  
-* `df_complete` before subset nrows =1170 
-* `df_complete` after subset nrows =1170 
-Info$d_col variables:  PID 
--- Time var nms =  eTIME_ESRD , status = event_ESRDx , id = 31 
---- Table for event factor: ` event_ESRDf ` 
- censor ESRD death 
- 461 366 343 
---- Check `keep_vars`:  ... OK 
-* Admin censoring at 10 years (maximum observed time=16.88) 
-* --- Event variable has 3 levels 
-* --- mlr3:task1 created. CCH is FALSE 
---- task1e created 
---- task1e created nevent levels:  3 
---- Vector `pen.fac` with  38  elements created 
---- `task1e` partitioned with ratio  0.8  
-* alpha names = a.25, a.50, a.75, a.1 
-save3 
-save3 
-save3 
-save3 
-??? 
- [1] "cv.glmnet"
-???1 
- ???2a 
- ???3 
- ??? 
- [1] "cv.glmnet"
-???1 
- ???2a 
- ???3 
- ??? 
- [1] "cv.glmnet"
-???1 
- ???2a 
- ???3 
- ??? 
- [1] "cv.glmnet"
-???1 
- ???2a 
- ???3 
- * Objects: data1e, logx, prj_Info, Info, cva_glmnet_fits saved in './CRIC_prj/lin1/31eTIME_ESRD_cva_glmnet.Rdata 
-* Sheet_names: Info, glanceAll, tidyAll, coefAll in ./CRIC_prj/lin1/31eTIME_ESRD_summary.xlsx 
-Time stamp. t_varsid:  31  
-[1] "2024-11-19 22:14:31 EST"
---- Running iteration 32 started on Tue 11/19/2024 22:14:31.92 
+Error in if (is.na(Info$subset)) "Not applicable" else Info$subset : 
+  argument is of length zero
+Calls: tribble -> extract_frame_data_from_dots -> list2
+Execution halted
+--- Running iteration 32 started on Fri 12/13/2024 16:14:10.89 
 running
   'C:\Program Files\R\R-4.4.1\bin\x64\Rterm.exe --no-echo --no-restore --no-save --no-restore --file=C:\Users\agalecki\Documents\GitHub\surv-mlr\30-cric-cv.coxnet.R --args CRIC_prj:lin1:30-cric-cv.coxnet 32'
 
 * ====== Script executed in batch mode for tvar=32 
-* Time stamp: 2024-11-19 22:14:32.197096 
-[1] "2024-11-19 22:14:32 EST"
-* Project name: CRIC_prj 
+* Time stamp: 2024-12-13 16:14:11.141174 
+[1] "2024-12-13 16:14:11 EST"
+* == Project name: CRIC_prj 
+* == Analysis name: lin1 
+* ===== INPUT INFO 
 Loaded glmnet 4.1-8
 
 Attaching package: 'dplyr'
@@ -424,55 +268,11 @@ The following objects are masked from 'package:Matrix':
     expand, pack, unpack
 
 --- Packages loaded 
-[1] "original_nms"  "complete_nms"  "add_vars_name"
-* Sourcing `./CRIC_prj/prj_Info.inc`prj_Info` list with 3 components created. 
+* Sourcing `./CRIC_prj/prj_Info.inc. `prj_Info` list with `original_nms`, `complete_nms`, `add_vars_name`, `tvars_mtx_name`, `prj_learners` components created. 
 * Objects: Info_df_complete, var_labels, df_complete loaded from: ./data/02-cric_complete112023.Rdata 
-* Sourcing ./CRIC_prj/cric_add_variables.inc done ... OK 
---- Var names added to `df_complete` are stored in `vars_added` vector (n= 29 )
+* == Info$d_col variables: `id = PID` 
 * Sourcing ./CRIC_prj/cric_tvars_mtx.inc. `cric_tvars_mtx` with 19 rows created 
---- Info list on analysis in subfolder:  lin1  created 
-* Subset `df_complete` (optional):  
-* `df_complete` before subset nrows =1170 
-* `df_complete` after subset nrows =1170 
-Info$d_col variables:  PID 
--- Time var nms =  eTIME_LOSS50 , status = event_LOSS50x , id = 32 
---- Table for event factor: ` event_LOSS50f ` 
- censor LOSS50 death 
- 406 460 304 
---- Check `keep_vars`:  ... OK 
-* Admin censoring at 10 years (maximum observed time=16.88) 
-* --- Event variable has 3 levels 
-* --- mlr3:task1 created. CCH is FALSE 
---- task1e created 
---- task1e created nevent levels:  3 
---- Vector `pen.fac` with  38  elements created 
---- `task1e` partitioned with ratio  0.8  
-* alpha names = a.25, a.50, a.75, a.1 
-save3 
-save3 
-save3 
-save3 
-??? 
- [1] "cv.glmnet"
-???1 
- ???2a 
- ???3 
- ??? 
- [1] "cv.glmnet"
-???1 
- ???2a 
- ???3 
- ??? 
- [1] "cv.glmnet"
-???1 
- ???2a 
- ???3 
- ??? 
- [1] "cv.glmnet"
-???1 
- ???2a 
- ???3 
- * Objects: data1e, logx, prj_Info, Info, cva_glmnet_fits saved in './CRIC_prj/lin1/32eTIME_LOSS50_cva_glmnet.Rdata 
-* Sheet_names: Info, glanceAll, tidyAll, coefAll in ./CRIC_prj/lin1/32eTIME_LOSS50_summary.xlsx 
-Time stamp. t_varsid:  32  
-[1] "2024-11-19 22:14:40 EST"
+Error in if (is.na(Info$subset)) "Not applicable" else Info$subset : 
+  argument is of length zero
+Calls: tribble -> extract_frame_data_from_dots -> list2
+Execution halted

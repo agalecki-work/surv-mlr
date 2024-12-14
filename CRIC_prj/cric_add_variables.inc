@@ -1,11 +1,11 @@
-# Add variables to `complete_df`
+# Add/modify  variables  `df_complete`
 # Input: `df_complete`
 # Output: `df_complete` with vars added
 
 
 # CRIC `df_complete`: 
 
-#-- 3#: Create eTIME_??, event_??x and event_??f
+#-- 3#: Create eTIME_??, event_??x and event_??f variables
 #-- Template
 #eTIME_??       <- with(df_complete, ifelse(??==0, TIME_DEATH, TIME_??))
 #event_??x      <- with(df_complete, ifelse(?? ==0, 2*DEAD, 1)) # numeric with 0,1,2 values

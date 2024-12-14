@@ -14,21 +14,24 @@ knitr::opts_chunk$set(echo = TRUE, comment="#>")
 
 ```{r setup, include=FALSE}
 # Define variables used in the title
-anl_name = parms$anl_name
+anl_name = parms$anl_name   # Analysis name
 link_prj_Info = paste0("../../prj_Info.inc")
 link_add_vars = paste0("../../cric_add_variables.inc")
 link_complete_data = paste0("../../02-cric-df_complete.R")
 link_tvars_mtx = paste0("../../cric_tvars_mtx.inc")
 link_tvars_mtx1 = paste0("../cric_tvars_mtx.inc")
-
+link_prj_learners  =paste0("../prj_learners.inc")
+link_anl_info = paste0("../../", anl_name, "/_map.log")
 ```
 
-Project related internal links
+Project/analysis related internal links
 
-* [prj_Info.inc](`r link_prj_Info`)
-* [02-cric-df_complete.R](`r link_complete_data`)
-* [cric_add_variables.inc](`r link_add_vars`)  script used to derive new/modify existing variables in df_complete data
-* [cric_tvars_mtx.inc](`r link_tvars_mtx`)
+* [02-cric-df_complete.R](`r link_complete_data`): script that creates complete data (with imputed missing values)
+* [prj_Info.inc](`r link_prj_Info`): script contains definition of `prj_Info` list
+* [cric_add_variables.inc](`r link_add_vars`): R code used to derive new/modify existing variables in df_complete data
+* [cric_tvars_mtx.inc](`r link_tvars_mtx`): R code that creates `tvars_mtx` matrix with 4 columns: id, time, event.num, event.fac
+* [prj_learners.inc](`r link_prj_learners`): R code that creates named vector `prj_learners_info`
+* [Date stamp](`r link_anl_info`)
 
 Project info:
 
@@ -42,13 +45,7 @@ prj_Info
 
 * Original data name: `r prj_Info$original_nms["df"]` stored in `r  paste0("./data/", prj_Info$original_nms["Rdata"])`
 * Data frame `df_complete` stored in `r prj_Info$complete_nms["Rdata"]`
-* `d_cols` vector
-```{r d_cols-vector}
-tmp = prj_Info$d_cols
-tmp1 = c(names(tmp))
-dx = rbind(tmp1,tmp)
-rownames(dx) = NULL
-```
+
 
 # Data
 
